@@ -270,8 +270,28 @@ function normalize(s){
 }
 const TICK=new Set(['tick','ok','v','yes','correct','right','true','đúng','dung','y','c']);
 const CROSS=new Set(['cross','x','no','wrong','false','incorrect','sai','n']);
+function cleanKey(s){
+  return String(s).normalize('NFKC').replace(/\s+\d{3}\s*$/,'').replace(/\s*\([A-F](?:\s*[&,]\s*[A-F])*\)\s*$/,'').trim();
+}
 function variants(ans){
-  let a=String(ans).normalize('NFKC');
+  const out=new Set(variants1(cleanKey(ans)));
+  const a=cleanKey(ans);
+  // multi-gap answers "A / B ... C / D": cartesian product of the alternatives of each gap
+  const segs=a.split(/\s*(?:\.\.\.|…)\s*/);
+  if(segs.length>1 && segs[0] && segs[segs.length-1] && segs.some(s=>/\s\/\s|\sor\s/.test(s)) && segs.every(s=>s.split(/\s+\/\s+|\s+or\s+/).every(x=>x.split(/\s+/).length<=6))){
+    out.clear();
+    let acc=[''];
+    for(const s of segs){ const alts=s.split(/\s+\/\s+|\s+or\s+(?=\S)/).map(x=>x.trim()).filter(Boolean); const nx=[]; for(const p of acc) for(const q of alts) nx.push((p+' '+q).trim()); acc=nx.slice(0,200) }
+    for(const v of acc) for(const w of variants1(v)) out.add(w);
+  }
+  // "/ ... tail": the tail replaces the end of the first alternative
+  const sl=a.split(/\s+\/\s+/);
+  if(sl.length>1){ const w=sl[0].split(/\s+/);
+    for(const alt of sl.slice(1)){ const m=alt.match(/^(?:\.\.\.|…)\s*(.+)$/); if(!m) continue;
+      for(let c=Math.max(1,w.length-5);c<w.length;c++) out.add(normalize(w.slice(0,c).join(' ')+' '+m[1])) } }
+  return [...out].filter(Boolean);
+}
+function variants1(a){
   const out=new Set();
   // quoted alternatives inside parentheses, e.g. (‘attracts’ is also possible)
   a.replace(/\(([^)]*)\)/g,(m,inner)=>{
@@ -298,7 +318,6 @@ function variants(ans){
     out.add(alt.replace(/\s*\([^)]*\)\s*/g,' '));       // without optional words
     out.add(alt.replace(/[()]/g,''));                  // with optional words
   }
-  // whole answer with slashes collapsed
   out.add(a);
   return [...out].map(normalize).filter(Boolean);
 }
@@ -410,9 +429,12 @@ function selectUnit(k){
 
 /* ---------- theory ---------- */
 function md(s){
-  return esc(s).replace(/\*\*(.+?)\*\*/g,'<b>$1</b>').replace(/(^|[\s(\[‘“])_(.+?)_(?=$|[\s.,;:!?)\]’”])/g,'$1<i>$2</i>').replace(/\^(\d{1,2})\^/g,'<sup>$1</sup>');
+  return esc(s).replace(/\*\*(.+?)\*\*/g,'<b>$1</b>').replace(/\*\*/g,'')
+    .replace(/\^(\d{1,2})\^/g,'<sup>$1</sup>')
+    .replace(/(^|[\s(\[‘“/>\-–]|<\/b>|<b>)_([^_<>]+?)_(?=$|[\s.,;:!?)\]’”/<\-–'’]|<b>|<\/b>|<sup>)/g,'$1<i>$2</i>')
+    .replace(/(^|[\s(\[‘“/>\-–])_([^_<>]+?)_(?=$|[\s.,;:!?)\]’”/<\-–'’])/g,'$1<i>$2</i>');
 }
-function plain(s){return String(s).replace(/\*\*|\^\d{1,2}\^/g,'').replace(/(^|\s)_(.+?)_/g,'$1$2')}
+function plain(s){return String(s).replace(/\*\*|\^\d{1,2}\^/g,'').replace(/_([^_]+)_/g,'$1').replace(/_{2,}/g,' ')}
 function cellHTML(c){return String(c).split('\n').map(md).join('<br>')}
 function tableHTML(b){
   const rows=b.rows||[]; let h=`<div class="tw"><table${b.plain?' class="cols"':''}>`;
@@ -429,7 +451,8 @@ function renderBlocks(bl){
     else if(b.t==='tbl') h+=tableHTML(b);
     else if(b.t==='img') h+=`<figure class="fig"><img src="${b.src}" alt="hình minh hoạ" loading="lazy" style="width:${Math.max(18,b.w||50)}%"></figure>`;
     else if(b.t==='ref') h+=`<p class="hint">${md(b.s)}</p>`;
-    else { const s=b.s; const cls=/^(•|–|-)\s?/.test(plain(s))?'bul':(/^\d{1,2}\s/.test(plain(s))&&plain(s).length<140?'gl':''); h+=`<p class="${cls}">${md(s)}</p>`; }
+    else if(/^\d\s/.test(b.s)&&/\^\d{1,2}\^/.test(b.s)&&!/\*\*/.test(b.s.split('^')[0].slice(-3))){ const parts=b.s.split(/\^(\d{1,2})\^\s*/); let x=`<p class="gl">${md(parts[0])}</p>`; for(let q=1;q<parts.length;q+=2) x+=`<p class="gl">${esc(parts[q])} ${md(parts[q+1]||'')}</p>`; h+=x }
+    else { const s=b.s; const cls=/^(•|–|-)\s?/.test(plain(s))?'bul':(/^\d{1,2}\s/.test(plain(s))&&(plain(s).length<140||/\^\d\^/.test(s))?'gl':''); h+=`<p class="${cls}">${md(s)}</p>`; }
   }
   return h;
 }
@@ -458,31 +481,48 @@ function renderTheory(text){
 
 /* ---------- exercises ---------- */
 function exKey(ex){return 'a:'+state.book+':'+UNIT.key+':'+ex.id}
+const GAP_RE=/_{3,}|\.{4,}|…{2,}|(?:\. ){3,}\.?/g;
 function lineHTML(l){
-  return esc(l).replace(/_{3,}/g,'<span class="gap">_____</span>');
+  return md(String(l).replace(GAP_RE,'\u0001')).replace(/\u0001/g,'<span class="gap">_____</span>');
 }
 function renderExercise(ex, idx){
   const items=(ex.ans.items||[]).filter(it=>String(it.a).trim());
   const byK=new Map(items.map(it=>[it.k,it]));
   const saved=store.get(exKey(ex),{});
   const placed=new Set();
-  const lines=(ex.text||'').split('\n');
-  let body='';
-  let curN=null, firstItemSeen=false;
-  lines.forEach((l,i)=>{
-    const t=l.trim(); if(!t) return;
-    let m, k=null;
-    if((m=t.match(/^(\d{1,2})\s+([a-f])\s+/))){ curN=m[1]; k=m[1]+m[2]; if(!byK.has(k)&&byK.has(m[1])) k=m[1]; }
-    else if((m=t.match(/^(\d{1,2})(\s|$)/))){ curN=m[1]; k=m[1]; }
-    else if(curN && (m=t.match(/^([b-f])\s+/))){ k=curN+m[1]; }
-    if(k) firstItemSeen=true;
-    if(k && byK.has(k) && !placed.has(k)){
-      placed.add(k);
-      body+=`<div class="exline item"><span class="txt">${lineHTML(t)}</span>${inputHTML(ex,byK.get(k),saved)}</div>`;
-    }else{
-      body+=`<div class="exline ${!firstItemSeen&&i===0&&!k?'instr':''}">${lineHTML(t)}</div>`;
-    }
-  });
+  const lines=(ex.text||'').split('\n').map(s=>s.trim()).filter(Boolean);
+  const startsN=new Set(lines.map(l=>(l.match(/^\(?(\d{1,2})\)?\s/)||[])[1]).filter(Boolean));
+  // inline cloze markers (1) ___ inside a line
+  const inl=(html)=>html.replace(/\((\d{1,2})\)\s*(<span class="gap">_____<\/span>)?/g,(m,n,g)=>{ if(byK.has(n)&&!placed.has(n)){ placed.add(n); return `<b>(${n})</b> `+inputHTML(ex,byK.get(n),saved) } return m });
+  const ents=[]; let curN=null, cur=null;
+  const keyOf=(t)=>{ let m;
+    if((m=t.match(/^(\d{1,2})\s+([a-f])\s+/))){ curN=m[1]; let k=m[1]+m[2]; if(!byK.has(k)&&byK.has(m[1])) k=m[1]; return k }
+    if((m=t.match(/^\(?(\d{1,2})\)?(\s|$)/))){ curN=m[1]; return m[1] }
+    if(curN && (m=t.match(/^([a-f])\s+/)) && byK.has(curN+m[1])) return curN+m[1];
+    return null };
+  for(let t of lines){
+    let k=keyOf(t);
+    if(k && byK.has(k) && !placed.has(k) && !ents.some(e=>e.k===k)){
+      // several items on one line: "1 circle 2 to coin 3 screwdriver"
+      const segs=[]; let rest=t, kk=k;
+      while(true){ const n=+String(kk).replace(/\D.*$/,''); const nx=String(n+1);
+        const re=new RegExp('\\s'+nx+'\\s'); const mm=rest.slice(2).match(re);
+        if(/^\d+$/.test(String(kk)) && mm && byK.has(nx) && !startsN.has(nx)){ const p=mm.index+2; segs.push([kk,rest.slice(0,p).trim()]); rest=rest.slice(p).trim(); kk=nx } else break }
+      segs.push([kk,rest]);
+      for(const [k2,s2] of segs){ cur={k:k2,lines:[s2]}; ents.push(cur) }
+      continue }
+    const prevLast=cur&&cur.lines[cur.lines.length-1];
+    const contin = cur && !k && (/^[a-z(….,;:–-]/.test(t) || !/[.?!)"’”:]$/.test(prevLast) || GAP_RE.test(t));
+    GAP_RE.lastIndex=0;
+    if(contin){ cur.lines.push(t); continue }
+    cur=null; ents.push({k:null,lines:[t]});
+  }
+  let body=''; let first=true;
+  for(const e of ents){
+    if(e.k){ placed.add(e.k); body+=`<div class="exline item"><span class="txt">${inl(e.lines.map(lineHTML).join(' '))}</span>${inputHTML(ex,byK.get(e.k),saved)}</div>` }
+    else body+=`<div class="exline ${first?'instr':''}">${inl(lineHTML(e.lines[0]))}</div>`;
+    first=false;
+  }
   if(!ex.text){
     body+=`<div class="note">Đề bài của bài ${esc(ex.id)} không tách riêng được từ file gốc (thường nằm chung với bài liền trước hoặc là hình/bảng). Bạn vẫn có thể nhập đáp án theo số câu bên dưới.</div>`;
   }
@@ -558,7 +598,7 @@ function wireCard(card,ex){
     if(a==='check') check(card,ex,true);
     if(a==='ai'){ save(); AI.grade(card,ex); return }
     if(a==='key'){ const k=card.querySelector('.keybox'); k.hidden=!k.hidden; b.textContent=k.hidden?'Xem đáp án':'Ẩn đáp án' }
-    if(a==='reveal'){ card.querySelectorAll('.ans').forEach(i=>{ const it=ex.ans.items.find(x=>x.k===i.dataset.k); if(it){ const sol=card.querySelector(`[data-sol="${CSS.escape(it.k)}"]`); sol.hidden=false; sol.innerHTML='<b>Đáp án:</b> '+esc(it.a);} }) }
+    if(a==='reveal'){ card.querySelectorAll('.ans').forEach(i=>{ const it=ex.ans.items.find(x=>x.k===i.dataset.k); if(it){ const sol=card.querySelector(`[data-sol="${CSS.escape(it.k)}"]`); sol.hidden=false; sol.innerHTML='<b>Đáp án:</b> '+esc(cleanKey(it.a));} }) }
     if(a==='reset'){ store.set(exKey(ex),{}); card.querySelectorAll('.ans').forEach(i=>{i.value='';i.classList.remove('ok','bad','ref');i.parentElement.querySelector('.mark').textContent=''}); card.querySelectorAll('.sol').forEach(s=>s.hidden=true); const f=card.querySelector('[data-free]'); if(f) f.value=''; card.querySelector('.score').textContent=''; recordScore(ex,0,0,true) }
   });
   // restore marks if previously checked
@@ -579,7 +619,7 @@ function check(card,ex,showSol){
     else if(r===null){ mk.textContent=''; mk.className='mark'; }
     else{
       i.classList.add(open?'ref':'bad'); mk.className='mark '+(open?'ref':'bad'); mk.textContent=open?'≈':'✗';
-      if(sol&&showSol!==false){ sol.hidden=false; sol.innerHTML=(open?'<b>Gợi ý:</b> ':'<b>Đáp án:</b> ')+esc(it.a) }
+      if(sol&&showSol!==false){ sol.hidden=false; sol.innerHTML=(open?'<b>Gợi ý:</b> ':'<b>Đáp án:</b> ')+esc(cleanKey(it.a)) }
     }
   });
   const s=card.querySelector('.score');
@@ -630,6 +670,10 @@ const AI=(()=>{
   const getKey=()=>{ try{ return (ss&&ss.getItem(K))||(ls&&ls.getItem(K))||'' }catch(e){return ''} };
   const getModel=()=>{ try{ return (ls&&ls.getItem(M))||'gemini-2.5-flash' }catch(e){return 'gemini-2.5-flash'} };
   function setKey(k,remember){ try{ ls&&ls.removeItem(K); ss&&ss.removeItem(K); if(k) (remember?ls:ss).setItem(K,k) }catch(e){} }
+  const DEF_MODELS=[['gemini-2.5-flash','Gemini 2.5 Flash · nhanh, chấm tốt (khuyên dùng)'],['gemini-2.5-pro','Gemini 2.5 Pro · kỹ nhất, chậm hơn'],['gemini-2.5-flash-lite','Gemini 2.5 Flash-Lite · rẻ và nhanh nhất'],['gemini-2.0-flash','Gemini 2.0 Flash']];
+  function modelOpts(cur){ let list=DEF_MODELS.slice(); try{ const x=JSON.parse((ls&&ls.getItem('inuse-ai-models'))||'[]'); for(const m of x) if(!list.some(l=>l[0]===m)) list.push([m,m]) }catch(e){}
+    if(cur&&!list.some(l=>l[0]===cur)) list.unshift([cur,cur]);
+    return list.map(([v,l])=>`<option value="${esc(v)}" ${v===cur?'selected':''}>${esc(l)}</option>`).join('') }
   function dlg(){
     let d=$('#aiDlg'); if(!d){ d=document.createElement('div'); d.id='aiDlg'; document.body.appendChild(d);
       d.addEventListener('click',e=>{ if(e.target===d) d.classList.remove('on') }); }
@@ -639,12 +683,20 @@ const AI=(()=>{
       <label>API key ${has?'(đã lưu: ••••'+esc(getKey().slice(-4))+')':''}</label>
       <input type="password" id="aiKey" placeholder="${has?'Để trống nếu giữ key cũ':'Dán key vào đây'}" autocomplete="off" spellcheck="false">
       <label><input type="checkbox" id="aiRem" ${has&&ls&&ls.getItem(K)?'checked':(!has?'checked':'')}> Nhớ key trên máy này (bỏ chọn thì key tự xoá khi đóng trình duyệt)</label>
-      <label>Model</label><input type="text" id="aiModel" value="${esc(getModel())}">
+      <label>Model AI chấm bài</label>
+      <div style="display:flex;gap:8px"><select id="aiModelSel" style="flex:1;padding:9px;border:1px solid var(--line);border-radius:9px;background:var(--bg);color:var(--ink);font:inherit">${modelOpts(getModel())}</select><button class="btn" id="aiList" title="Lấy danh sách model mà key của bạn dùng được">↻ Tải danh sách</button></div>
+      <input type="text" id="aiModel" value="${esc(getModel())}" placeholder="hoặc gõ tên model" style="margin-top:6px">
       <div class="row"><button class="btn primary" id="aiSave">Lưu</button><button class="btn" id="aiTest">Thử key</button><button class="btn" id="aiDel">Xoá key</button><button class="btn" id="aiClose" style="margin-left:auto">Đóng</button></div>
       <div class="st" id="aiSt"></div></div>`;
     d.classList.add('on');
     const st=m=>$('#aiSt').textContent=m;
     $('#aiClose').onclick=()=>d.classList.remove('on');
+    $('#aiModelSel').onchange=e=>{ $('#aiModel').value=e.target.value };
+    $('#aiList').onclick=async()=>{ const v=$('#aiKey').value.trim(); if(v) setKey(v,$('#aiRem').checked); $('#aiKey').value=''; const key=getKey(); if(!key){st('Chưa có key');return} st('Đang tải danh sách…');
+      try{ const r=await fetch('https://generativelanguage.googleapis.com/v1beta/models?pageSize=200',{headers:{'x-goog-api-key':key}}); const j=await r.json(); if(!r.ok) throw new Error((j.error&&j.error.message)||r.status);
+        const ms=(j.models||[]).filter(m=>(m.supportedGenerationMethods||[]).includes('generateContent')).map(m=>m.name.replace(/^models\//,'')).filter(m=>/gemini/.test(m));
+        try{ ls&&ls.setItem('inuse-ai-models',JSON.stringify(ms)) }catch(e){}
+        $('#aiModelSel').innerHTML=modelOpts($('#aiModel').value.trim()||getModel()); st(`Có ${ms.length} model dùng được ✓`) }catch(e){ st('Lỗi: '+e.message) } };
     $('#aiSave').onclick=()=>{ const v=$('#aiKey').value.trim(); const rem=$('#aiRem').checked; setKey(v||getKey(),rem); try{ls&&ls.setItem(M,$('#aiModel').value.trim()||'gemini-2.5-flash')}catch(e){} $('#aiKey').value=''; st(getKey()?'Đã lưu ✓':'Chưa có key'); };
     $('#aiDel').onclick=()=>{ setKey('',false); st('Đã xoá key khỏi máy này.'); };
     $('#aiTest').onclick=async()=>{ const v=$('#aiKey').value.trim(); if(v) setKey(v,$('#aiRem').checked); $('#aiKey').value=''; st('Đang thử…'); try{ await call('Reply with the single word OK.'); st('Key dùng được ✓') }catch(e){ st('Lỗi: '+e.message) } };
@@ -663,7 +715,7 @@ const AI=(()=>{
     const answers=[...card.querySelectorAll('.ans')].map(i=>({k:i.dataset.k,a:i.value.trim()}));
     const free=(card.querySelector('[data-free]')||{}).value||'';
     if(!answers.some(x=>x.a)&&!free.trim()){ box.textContent='Bạn chưa làm câu nào.'; return }
-    box.textContent='🤖 AI đang chấm…';
+    box.textContent='🤖 AI ('+getModel()+') đang chấm…';
     const prompt=`You are an English teacher grading a student's exercise from "${BOOK.title}", Unit ${UNIT.u.n}: ${UNIT.u.title}.
 Exercise ${ex.id}:
 ${ex.text||'(exercise text not available)'}
@@ -688,7 +740,7 @@ Grade each item. Accept answers that are correct English and fit the exercise ev
       box.innerHTML=`<b>🤖 AI nhận xét${n?` (${ok}/${n} câu đúng)`:''}:</b>\n`+esc(j.overall||'');
     }catch(e){ box.textContent='Không chấm được: '+e.message }
   }
-  return {dlg,grade,getKey};
+  return {dlg,grade,getKey,call,getModel};
 })();
 $('#aiBtn').onclick=()=>AI.dlg();
 
@@ -735,10 +787,11 @@ const Lecture=(()=>{
       <div class="ctl"><button id="lecPrev" title="Slide trước">⏮</button><button class="play" id="lecPlay">▶ Phát</button><button id="lecNext" title="Slide sau">⏭</button>
         <div class="prog"><i id="lecProg"></i></div><span class="cap" id="lecCap"></span>
         <select id="lecRate" title="Tốc độ đọc"><option value="0.8">0.8×</option><option value="0.9">0.9×</option><option value="1">1×</option><option value="1.15">1.15×</option><option value="1.3">1.3×</option></select>
-        <select id="lecVoice" title="Giọng đọc"></select></div>`;
+        <select id="lecVoice" title="Giọng đọc"></select><button id="lecAI" title="Dùng AI (Gemini) soạn lời giảng như giảng viên">🎓 Lời giảng AI</button></div>`;
     document.body.appendChild(d);
     $('#lecX').onclick=close; $('#lecPrev').onclick=()=>go(si-1); $('#lecNext').onclick=()=>go(si+1);
     $('#lecPlay').onclick=()=>playing?pause():play();
+    $('#lecAI').onclick=e=>{ if(aiScript){ aiScript=null; e.target.textContent='🎓 Lời giảng AI'; return } aiPrepare(e.target) };
     $('#lecRate').value=String(rate); $('#lecRate').onchange=e=>{rate=+e.target.value;store.set('lecRate',rate); if(playing){stopSpeech();speak()}};
     $('#lecVoice').onchange=e=>{voiceName=e.target.value;store.set('lecVoice',voiceName); if(playing){stopSpeech();speak()}};
     const fill=()=>{ const vs=voices(), v=pickVoice(); $('#lecVoice').innerHTML=vs.length?vs.map(x=>`<option ${v&&x.name===v.name?'selected':''}>${esc(x.name)}</option>`).join(''):'<option>(máy chưa có giọng tiếng Anh)</option>' };
@@ -750,7 +803,9 @@ const Lecture=(()=>{
   function render(){
     const s=slides[si]; const st=$('#lecStage');
     if(s.cover){
-      st.innerHTML=`<div class="slide noimg cover"><div>${BOOKSVG}<div class="k">${esc(BOOK.title)}</div><h2>${UNIT.key==='add'?'':'Unit '+esc(unit.n)+'<br>'}${esc(unit.title)}</h2><p style="opacity:.75">${slides.length-1} phần · bấm ▶ Phát hoặc phím Space</p></div></div>`;
+      st.innerHTML=`<div class="slide noimg cover"><div>${BOOKSVG}<div class="k">${esc(BOOK.title)}</div><h2>${UNIT.key==='add'?'':'Unit '+esc(unit.n)+'<br>'}${esc(unit.title)}</h2><p style="opacity:.75">${slides.length-2} phần · bấm ▶ Phát hoặc phím Space</p></div></div>`;
+    }else if(s.outro){
+      st.innerHTML=`<div class="slide noimg cover"><div>${BOOKSVG}<div class="k">Hoàn thành</div><h2>Well done! 🎉</h2><p style="opacity:.8">Giờ hãy sang tab <b>Bài tập</b> để luyện những gì vừa học.</p></div></div>`;
     }else{
       st.innerHTML=`<div class="slide ${s.img?'':'noimg'}"><div><div class="stitle">${s.l?`<span class="L">${esc(s.l)}</span>`:''}<span>${md(s.h||unit.title)}</span></div>${s.paras.map((p,i)=>`<div class="para ${i<pi?'done':''} ${i===pi?'cur':''}" data-i="${i}">${typeof p==='string'?md(p):tableHTML(p.tbl)}</div>`).join('')}</div>${s.img?`<div class="pic">${(s.imgs&&s.imgs.length?s.imgs.slice(0,3):[s.img]).map(i=>`<img src="${i.src}" alt="hình minh hoạ">`).join('')}</div>`:''}</div>`;
       st.querySelectorAll('.para').forEach(p=>p.onclick=()=>{pi=+p.dataset.i;mark();if(playing){stopSpeech();speak()}});
@@ -760,7 +815,55 @@ const Lecture=(()=>{
   }
   function mark(){ $('#lecStage').querySelectorAll('.para').forEach((p,i)=>{p.classList.toggle('cur',i===pi);p.classList.toggle('done',i<pi); if(i===pi) p.scrollIntoView({block:'nearest',behavior:'smooth'})}) }
   function stopSpeech(){ token++; if(synth) synth.cancel() }
-  function textFor(){ const s=slides[si]; if(s.cover) return (UNIT.key==='add'?'':'Unit '+unit.n+'. ')+unit.title; if(pi===-1) return plain(s.h||''); const P=s.paras[pi]; if(P&&typeof P!=='string') return P.say; return plain(P||'').replace(/\s·\s/g,'. ').replace(/\(=/g,'(meaning').replace(/➜/g,'see') }
+  let aiScript=null;
+  const pick=(arr,seed)=>arr[Math.abs(seed)%arr.length];
+  const tidy=s=>s.replace(/\be\.g\./g,'for example,').replace(/\betc\./g,'and so on').replace(/\bsb\b/g,'somebody').replace(/\bsth\b/g,'something').replace(/\binfml\b/g,'informal').replace(/\bfml\b/g,'formal').replace(/➜\s*/g,'see ').replace(/\s·\s/g,'. ').replace(/\s+/g,' ').trim();
+  function lecturize(raw,seed){
+    const bolds=[...raw.matchAll(/\*\*([^*]+)\*\*/g)].map(m=>plain(m[1]).trim()).filter(x=>x.length>1);
+    let s=raw;
+    let defs=0;
+    s=s.replace(/\*\*([^*]+)\*\*\s*\[([^\]]{2,80})\]/g,(m,w,d)=>{defs++; return `${plain(w)}, which means ${plain(d)}.`});
+    s=s.replace(/\(not ([^)]+)\)/g,(m,x)=>` — and notice, we don't say "${plain(x)}".`);
+    s=s.replace(/\(=\s*([^)]+)\)/g,(m,x)=>`, in other words, ${plain(x)},`);
+    s=s.replace(/\[([^\]]{2,80})\]/g,(m,x)=>`, meaning ${plain(x)},`);
+    let out=tidy(plain(s));
+    if(bolds.length && !defs){
+      const uniq=[...new Set(bolds)].slice(0,4);
+      if(uniq.length===1) out+=' '+pick([`So the key expression here is "${uniq[0]}".`,`Remember: "${uniq[0]}".`,`Pay attention to "${uniq[0]}".`],seed);
+      else out+=' '+pick([`The key expressions are: ${uniq.slice(0,-1).join(', ')} and ${uniq[uniq.length-1]}.`,`Notice the highlighted words: ${uniq.join(', ')}.`],seed);
+    }
+    return out;
+  }
+  function narrate(s,i){
+    const sid=slides.indexOf(s);
+    if(aiScript){ const k=s.cover?'intro':s.outro?'outro':`s${sid}p${i}`; if(aiScript[k]) return aiScript[k] }
+    if(s.cover) return `Hello, and welcome! In this lesson from ${BOOK.title}, we're going to look at ${UNIT.key==='add'?'':'Unit '+unit.n+': '}${unit.title}. Let's get started.`;
+    if(s.outro) return `And that's the end of this unit. Well done! Now try the exercises to practise what you've just learned. See you in the next lesson.`;
+    const P=s.paras[i]; let pre='';
+    if(i===0){ const first=!slides.slice(1,sid).some(x=>x.l===s.l&&!x.outro);
+      if(s.l&&first) pre=`Section ${s.l}${s.h?': '+tidy(plain(s.h)):''}. `+pick(["Let's take a look.","Here's the idea.","Let's see how this works.","Listen carefully."],sid)+' ';
+      else if(s.h&&first) pre=tidy(plain(s.h))+'. ';
+      else pre=pick(["Let's continue.","Now, moving on.","Here's more.","Next."],sid)+' ' }
+    if(P&&typeof P!=='string'){ const rows=P.tbl.rows.filter(r=>r.some(c=>plain(c).trim())); let x=pre+pick(["Let's look at this table.","Have a look at this table."],sid)+' ';
+      rows.forEach((r,k)=>{ if(P.tbl.head&&k===0) return; const cells=r.filter(c=>plain(c).trim()).map(c=>tidy(plain(c).replace(/\n/g,'. '))); x+=(k<=1?'First, ':pick(['Next, ','Then, ','And ','Also, '],k))+cells.join(': ')+'. ' }); return x }
+    return pre+lecturize(P||'',sid*7+i);
+  }
+  function textFor(){ const s=slides[si]; return narrate(s,pi) }
+  async function aiPrepare(btn){
+    if(!AI.getKey()){ AI.dlg(); return }
+    const ck='lec:'+state.book+':'+unit.n+':'+AI.getModel();
+    try{ const c=localStorage.getItem(ck); if(c){ aiScript=JSON.parse(c); btn.textContent='🎓 Lời giảng AI ✓'; return } }catch(e){}
+    btn.textContent='🎓 AI đang soạn…'; btn.disabled=true;
+    const items={}; slides.forEach((s,si2)=>{ if(s.cover||s.outro) return; s.paras.forEach((P,i)=>{ items[`s${si2}p${i}`]=(i===0&&(s.l||s.h)?`[Section ${s.l||''} ${plain(s.h||'')}] `:'')+(typeof P==='string'?plain(P):P.tbl.rows.map(r=>r.map(c=>plain(c)).join(' | ')).join(' / ')) }) });
+    const prompt=`You are a warm, engaging English teacher recording an audio lecture for a Vietnamese learner, based on "${BOOK.title}", Unit ${unit.n}: ${unit.title}.
+For each item below write what you SAY while that paragraph is on screen: explain it like a lecturer (not just reading it aloud) — introduce the point, read the key example(s) naturally, explain meaning and usage briefly, maybe give one extra simple example or a tip about a common mistake. Spoken English only, no markdown, no lists, 2–5 sentences per item. Also write "intro" (greeting + what the lesson covers) and "outro" (short recap + encouragement to do the exercises).
+Return JSON object with the same keys plus "intro" and "outro".
+Items:
+${JSON.stringify(items)}`;
+    try{ const out=await AI.call(prompt,true); aiScript=JSON.parse(out); try{localStorage.setItem(ck,JSON.stringify(aiScript))}catch(e){} btn.textContent='🎓 Lời giảng AI ✓' }
+    catch(e){ btn.textContent='🎓 Lời giảng AI (lỗi)'; $('#lecCap').textContent='AI lỗi: '+e.message }
+    btn.disabled=false;
+  }
   function speak(){
     if(!synth){ $('#lecCap').textContent='Trình duyệt này không hỗ trợ đọc to'; return }
     const my=++token; const s=slides[si];
@@ -772,6 +875,7 @@ const Lecture=(()=>{
   }
   function advance(){
     const s=slides[si];
+    if(s.outro){ pause(); $('#lecCap').textContent='Hết bài ✓'; return }
     if(s.cover){ if(si+1<slides.length){ si++; pi=0; render(); setTimeout(()=>{ if(playing) speak() },500) } else pause(); return }
     if(pi+1<s.paras.length){ pi++; mark(); speak(); return }
     if(si+1<slides.length){ si++; pi=0; render(); setTimeout(()=>{ if(playing) speak() },500); return }
@@ -780,13 +884,14 @@ const Lecture=(()=>{
   function play(){ playing=true; $('#lecPlay').textContent='⏸ Dừng'; speak() }
   function pause(){ playing=false; stopSpeech(); $('#lecPlay').textContent='▶ Phát' }
   function go(n){ if(n<0||n>=slides.length) return; stopSpeech(); si=n; pi=0; render(); if(playing) setTimeout(speak,350) }
-  function open(u){ unit=u; slides=build(u); si=0; pi=0; el().classList.add('on'); $('#lecT').textContent=(BOOK.title||'')+' — '+u.title; render(); pause() }
+  function open(u){ unit=u; aiScript=null; const ab=$('#lecAI'); if(ab) ab.textContent='🎓 Lời giảng AI'; slides=build(u); slides.push({outro:true,paras:[]}); si=0; pi=0; el().classList.add('on'); $('#lecT').textContent=(BOOK.title||'')+' — '+u.title; render(); pause() }
   function close(){ pause(); const d=$('#lec'); if(d) d.classList.remove('on') }
   return {open,close};
 })();
 
 renderBooks();
 selectBook(state.book);
+window.__IU={renderExercise,setUnit:(u)=>{UNIT={u,key:u.n}}};
 })();
 </script>
 </body>
