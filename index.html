@@ -214,6 +214,45 @@ body.pg-on .content{margin-right:min(46vw,760px)}
   h1{font-size:21px}
   .ans-wrap{flex-basis:100%}
 }
+/* Enhanced Visuals: Crosswords, WebBox, Charts, Diagrams & Badges */
+.v-badge{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;margin:2px 4px 2px 0;border-radius:6px;background:color-mix(in srgb,var(--bk) 11%,var(--panel));border:1px solid color-mix(in srgb,var(--bk) 28%,transparent);color:var(--ink);font-size:13px;font-weight:500}
+.webbox{border:1px solid var(--line);border-radius:10px;overflow:hidden;margin:8px 0 12px;background:var(--panel);box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.webbox-top{background:#e2e6ec;color:#475467;padding:5px 12px;display:flex;align-items:center;gap:8px;font-size:12px;border-bottom:1px solid var(--line)}
+:root[data-theme="dark"] .webbox-top{background:#252b37;color:#98a2b3}
+.webbox-bar{background:#d92d50;color:#fff;padding:8px 14px;font-weight:700;font-size:15px;display:flex;align-items:center;justify-content:space-between}
+.webbox-body{padding:10px 14px}
+.cw-wrap{display:grid;grid-template-columns:auto 1fr;gap:20px;align-items:start;margin:10px 0}
+@media (max-width:720px){.cw-wrap{grid-template-columns:1fr}}
+.cw-box{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:12px;overflow-x:auto}
+.cw-title{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center}
+.cw-grid{display:inline-grid;gap:2px;background:#344054;padding:3px;border-radius:6px;user-select:none}
+.cw-cell,.cw-blk{width:32px;height:32px;position:relative;display:grid;place-items:center;font-weight:700;font-size:15px;text-transform:uppercase;border-radius:2px}
+.cw-blk{background:#475467}
+:root[data-theme="dark"] .cw-blk{background:#1f242f}
+.cw-cell{background:#ffffff;color:#1d2330;cursor:pointer;transition:background .15s}
+:root[data-theme="dark"] .cw-cell{background:#262d3d;color:#f3f5fb}
+.cw-cell:hover{background:var(--accent-soft)}
+.cw-cell.given{background:#eef4ff;color:var(--accent)}
+:root[data-theme="dark"] .cw-cell.given{background:#1e2b45;color:#84adff}
+.cw-cell .cw-n{position:absolute;top:1px;left:2px;font-size:9.5px;font-weight:700;color:#475467;line-height:1}
+:root[data-theme="dark"] .cw-cell .cw-n{color:#98a2b3}
+.cw-cell .cw-ch{margin-top:4px;font-family:var(--mono)}
+.chart-box{border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin:10px 0;background:var(--bg)}
+.chart-title{font-weight:700;font-size:14.5px;margin-bottom:10px;color:var(--ink)}
+.chart-svg{width:100%;max-width:640px;height:auto;display:block}
+.web-diag{display:grid;grid-template-columns:1fr auto 1fr;gap:12px;align-items:center;padding:14px;border:1px solid var(--line);border-radius:10px;background:var(--bg);margin:10px 0}
+.web-center{background:var(--bk);color:#fff;font-weight:800;padding:12px 18px;border-radius:999px;text-align:center;box-shadow:0 4px 14px rgba(0,0,0,.15)}
+.web-node{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:13px}
+/* Enhanced Lecture Mode Scrubber, Controls & Lecturer Banner */
+#lec .lec-note{margin-top:14px;padding:12px 16px;border-radius:12px;background:rgba(255,209,102,.12);border:1px solid rgba(255,209,102,.35);color:#fff;font-size:15px;line-height:1.55;display:flex;align-items:flex-start;gap:10px}
+#lec .lec-note .badge{background:#ffd166;color:#12151b;font-weight:800;font-size:11.5px;padding:2px 8px;border-radius:999px;white-space:nowrap;margin-top:2px;text-transform:uppercase;letter-spacing:.4px}
+#lec .lec-note .spoken{flex:1}
+#lec .lec-note .spoken mark{background:#ffd166;color:#12151b;padding:0 3px;border-radius:3px;font-weight:700}
+#lec .seek-wrap{flex:1;min-width:200px;display:flex;align-items:center;gap:10px}
+#lec .seek{flex:1;appearance:none;-webkit-appearance:none;height:7px;border-radius:999px;background:rgba(255,255,255,.22);outline:none;cursor:pointer}
+#lec .seek::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:#ffd166;border:2px solid #0d1020;box-shadow:0 2px 6px rgba(0,0,0,.4);cursor:grab}
+#lec .seek::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:#ffd166;border:2px solid #0d1020;box-shadow:0 2px 6px rgba(0,0,0,.4);cursor:grab}
+#lec .time{font-size:12.5px;font-variant-numeric:tabular-nums;opacity:.88;white-space:nowrap}
 </style>
 </head>
 <body>
@@ -483,8 +522,70 @@ function renderTheory(text){
 function exKey(ex){return 'a:'+state.book+':'+UNIT.key+':'+ex.id}
 const GAP_RE=/_{3,}|\.{4,}|…{2,}|(?:\. ){3,}\.?/g;
 function lineHTML(l){
-  return md(String(l).replace(GAP_RE,'\u0001')).replace(/\u0001/g,'<span class="gap">_____</span>');
+  return md(String(l).replace(GAP_RE,'\u0001')).replace(/\[([^\]]{1,60})\]/g,'<span class="v-badge">$1</span>').replace(/\u0001/g,'<span class="gap">_____</span>');
 }
+function renderCrosswordHTML(cw, saved){
+  const R=cw.rows, C=cw.cols;
+  const cells=Array.from({length:R},()=>Array(C).fill(null));
+  for(const w of cw.words){
+    const val=w.given?w.word:String(saved[String(w.num)]||'').trim().replace(/\s+/g,'');
+    for(let i=0;i<w.word.length;i++){
+      const r=w.r+(w.dir==='D'?i:0);
+      const c=w.c+(w.dir==='A'?i:0);
+      if(r>=0&&r<R&&c>=0&&c<C){
+        if(!cells[r][c]) cells[r][c]={num:null,ch:'',given:false,targetNum:w.num};
+        if(i===0 && !cells[r][c].num) cells[r][c].num=w.num;
+        if(w.given){ cells[r][c].ch=w.word[i]; cells[r][c].given=true; }
+        else if(val[i] && !cells[r][c].given){ cells[r][c].ch=val[i].toUpperCase(); }
+      }
+    }
+  }
+  let gridHTML=`<div class="cw-box"><div class="cw-title"><span>🧩 Lưới ô chữ (Crossword)</span><small>Bấm ô số hoặc nhập bên cạnh</small></div><div class="cw-grid" style="grid-template-columns:repeat(${C},32px)">`;
+  for(let r=0;r<R;r++){
+    for(let c=0;c<C;c++){
+      const cell=cells[r][c];
+      if(!cell){ gridHTML+=`<div class="cw-blk"></div>`; }
+      else{
+        gridHTML+=`<div class="cw-cell ${cell.given?'given':''}" data-cwnum="${cell.targetNum}" data-r="${r}" data-c="${c}">${cell.num?`<span class="cw-n">${cell.num}</span>`:''}<span class="cw-ch">${esc(cell.ch||'')}</span></div>`;
+      }
+    }
+  }
+  gridHTML+=`</div></div>`;
+  return gridHTML;
+}
+
+function renderChartHTML(chart){
+  const max=chart.max||35000;
+  const bars=chart.bars||[];
+  const W=580, H=210, padL=48, padR=16, padT=16, padB=32;
+  const plotW=W-padL-padR, plotH=H-padT-padB;
+  let svg=`<svg class="chart-svg" viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">`;
+  for(let v=5000;v<=max;v+=5000){
+    const y=Math.round(padT+plotH*(1-v/max));
+    svg+=`<line x1="${padL}" y1="${y}" x2="${W-padR}" y2="${y}" stroke="currentColor" stroke-opacity="0.14" stroke-dasharray="3,3"/>`;
+    svg+=`<text x="${padL-6}" y="${y+4}" text-anchor="end" font-size="10" fill="currentColor" opacity="0.65">${v}</text>`;
+  }
+  const bw=Math.floor(plotW/bars.length)-8;
+  bars.forEach((b,i)=>{
+    const x=padL+i*Math.floor(plotW/bars.length)+4;
+    const bh=Math.round(plotH*(b.v/max));
+    const y=padT+plotH-bh;
+    svg+=`<rect x="${x}" y="${y}" width="${bw}" height="${bh}" rx="3" fill="var(--bk)" opacity="0.85"><title>${b.m}: ${b.v}</title></rect>`;
+    svg+=`<text x="${x+bw/2}" y="${H-10}" text-anchor="middle" font-size="10.5" font-weight="600" fill="currentColor">${esc(b.m)}</text>`;
+  });
+  svg+=`</svg>`;
+  return `<div class="chart-box"><div class="chart-title">📊 ${esc(chart.title||'Chart')}</div>${svg}</div>`;
+}
+
+function renderWebDiagramHTML(wd){
+  const nodes=wd.nodes||[];
+  return `<div class="web-diag">
+    <div style="display:flex;flex-direction:column;gap:8px">${nodes.slice(0,2).map(n=>`<div class="web-node">${esc(n.label)}${n.ans?`<br><b style="color:var(--bk)">→ ${esc(n.ans)}</b>`:''}</div>`).join('')}</div>
+    <div class="web-center">${esc(wd.center||'')}</div>
+    <div style="display:flex;flex-direction:column;gap:8px">${nodes.slice(2).map(n=>`<div class="web-node">${esc(n.label)}${n.ans?`<br><b style="color:var(--bk)">→ ${esc(n.ans)}</b>`:''}</div>`).join('')}</div>
+  </div>`;
+}
+
 function renderExercise(ex, idx){
   const items=(ex.ans.items||[]).filter(it=>String(it.a).trim());
   const byK=new Map(items.map(it=>[it.k,it]));
@@ -523,6 +624,11 @@ function renderExercise(ex, idx){
     else body+=`<div class="exline ${first?'instr':''}">${inl(lineHTML(e.lines[0]))}</div>`;
     first=false;
   }
+  if(ex.webBox){
+    body=`<div class="webbox"><div class="webbox-top"><span>⟳</span><span>🔍</span><span>🏠</span></div><div class="webbox-bar"><span>${esc(ex.webBox)}</span><span>☰</span></div><div class="webbox-body">${body}</div></div>`;
+  }
+  if(ex.crossword) body=`<div class="cw-wrap"><div class="cw-holder">${renderCrosswordHTML(ex.crossword, saved)}</div><div>${body}</div></div>`;
+  else body=(ex.chart?renderChartHTML(ex.chart):'')+(ex.webDiagram?renderWebDiagramHTML(ex.webDiagram):'')+body;
   if(!ex.text){
     body+=`<div class="note">Đề bài của bài ${esc(ex.id)} không tách riêng được từ file gốc (thường nằm chung với bài liền trước hoặc là hình/bảng). Bạn vẫn có thể nhập đáp án theo số câu bên dưới.</div>`;
   }
@@ -590,7 +696,10 @@ function renderUnit(){
 }
 
 function wireCard(card,ex){
-  const save=()=>{const o={};card.querySelectorAll('.ans').forEach(i=>{if(i.value)o[i.dataset.k]=i.value});const f=card.querySelector('[data-free]');if(f&&f.value)o.__free=f.value;store.set(exKey(ex),o)};
+  const wireCwCells=()=>card.querySelectorAll('.cw-cell[data-cwnum]').forEach(c=>c.onclick=()=>{ const inp=card.querySelector(`.ans[data-k="${CSS.escape(c.dataset.cwnum)}"]`); if(inp) inp.focus() });
+  const updateCw=()=>{ if(!ex.crossword) return; const h=card.querySelector('.cw-holder'); if(!h) return; const cs={}; card.querySelectorAll('.ans').forEach(i=>{if(i.value)cs[i.dataset.k]=i.value}); h.innerHTML=renderCrosswordHTML(ex.crossword,cs); wireCwCells() };
+  wireCwCells();
+  const save=()=>{const o={};card.querySelectorAll('.ans').forEach(i=>{if(i.value)o[i.dataset.k]=i.value});const f=card.querySelector('[data-free]');if(f&&f.value)o.__free=f.value;store.set(exKey(ex),o);updateCw()};
   card.addEventListener('input',e=>{ if(e.target.matches('.ans')){e.target.classList.remove('ok','bad','ref');e.target.parentElement.querySelector('.mark').textContent='';} save() });
   card.addEventListener('keydown',e=>{ if(e.key==='Enter'&&e.target.matches('.ans')){ e.preventDefault(); const all=[...card.querySelectorAll('.ans')]; const i=all.indexOf(e.target); if(i<all.length-1) all[i+1].focus(); else check(card,ex,true) } });
   card.querySelectorAll('[data-act]').forEach(b=>b.onclick=()=>{
@@ -744,16 +853,179 @@ Grade each item. Accept answers that are correct English and fit the exercise ev
 })();
 $('#aiBtn').onclick=()=>AI.dlg();
 
-/* ---------- lecture mode ---------- */
+/* ---------- upgraded lecture mode (Seekable + 1.5x/2x + Narrator/Lecturer Engine) ---------- */
 const Lecture=(()=>{
-  let slides=[],si=0,pi=0,playing=false,rate=store.get('lecRate',1),voiceName=store.get('lecVoice',''),unit=null,token=0;
+  let slides=[],si=0,pi=0,playing=false,rate=store.get('lecRate',1),voiceName=store.get('lecVoice',''),style=store.get('lecStyle','lecturer'),unit=null,token=0;
+  let charOffset=0, curText='', timerId=null, lastTickTime=0, totalChars=1, slideOffsets=[];
   const synth=window.speechSynthesis;
+  const CHARS_PER_SEC=14.5;
+  let aiScript=null;
+  async function ensureAI(){
+    if(!AI.getKey()){ AI.dlg(); return false }
+    const ck='lec:'+state.book+':'+unit.n+':'+AI.getModel();
+    try{ const c=localStorage.getItem(ck); if(c){ aiScript=JSON.parse(c); return true } }catch(e){}
+    const cap=$('#lecCap'); if(cap) cap.textContent='🤖 AI đang soạn lời giảng…';
+    const base=slides.length?slides:build(unit);
+    const items={}; base.forEach((s,i)=>{ if(s.cover) return; s.paras.forEach((P,j)=>{ items['s'+i+'p'+j]=(j===0&&(s.l||s.h)?`[Section ${s.l||''} ${plain(s.h||'')}] `:'')+(typeof P==='string'?plain(P):(P.tbl?P.tbl.rows.map(r=>r.map(c=>plain(c)).join(' | ')).join(' / '):plain(P.say||''))) }) });
+    const prompt=`You are a warm, engaging English teacher recording an audio lecture for a Vietnamese learner, based on "${BOOK.title}", Unit ${unit.n}: ${unit.title}.
+For each item below write what you SAY while that paragraph is on screen: explain it like a lecturer (not just reading it aloud) — introduce the point, read the key example(s) naturally, explain meaning and usage briefly, maybe give one extra simple example or a tip about a common mistake. Spoken English only, no markdown, no lists, 2–5 sentences per item. Also write "intro" (greeting + what the lesson covers) and "outro" (short recap + encouragement to do the exercises).
+Return a JSON object with the same keys plus "intro" and "outro".
+Items:
+${JSON.stringify(items)}`;
+    try{ const out=await AI.call(prompt,true); aiScript=JSON.parse(out); try{localStorage.setItem(ck,JSON.stringify(aiScript))}catch(e){} return true }
+    catch(e){ if(cap) cap.textContent='AI lỗi: '+e.message; return false }
+  }
+  async function applyStyle(){
+    if(!unit) return;
+    const oldSi=si, oldPi=pi, wasPlaying=playing;
+    if(style==='ai' && !aiScript){ if(wasPlaying) pause(); const ok=await ensureAI(); if(!ok){ style='lecturer'; const sel=$('#lecStyle'); if(sel) sel.value=style } }
+    stopSpeech();
+    slides=build(unit);
+    si=Math.min(oldSi, slides.length-1);
+    pi=Math.min(oldPi, Math.max(0,(slides[si].paras||[]).length-1));
+    charOffset=0;
+    render();
+    if(wasPlaying && style!=='ai') speak(0);
+  }
+
   function voices(){ return (synth?synth.getVoices():[]).filter(v=>/^en/i.test(v.lang)) }
-  function pickVoice(){ const vs=voices(); return vs.find(v=>v.name===voiceName)||vs.find(v=>/en-GB/i.test(v.lang)&&/natural|online|neural/i.test(v.name))||vs.find(v=>/en-GB/i.test(v.lang))||vs.find(v=>/natural|online|neural/i.test(v.name))||vs[0] }
+  function scoreVoice(v){
+    let s=0;
+    const n=v.name||'';
+    if(/natural|online|neural/i.test(n)) s+=50;
+    if(/narrator|guy|ryan|sonia|libby|daniel|arthur|oliver|serena|george|uk english male|uk english female/i.test(n)) s+=35;
+    if(/en-GB/i.test(v.lang)) s+=20;
+    else if(/en-US|en-AU/i.test(v.lang)) s+=10;
+    return s;
+  }
+  function pickVoice(){
+    const vs=voices().slice().sort((a,b)=>scoreVoice(b)-scoreVoice(a));
+    return vs.find(v=>v.name===voiceName)||vs[0];
+  }
+
+  function cleanSpoken(raw){
+    return String(raw||'')
+      .replace(/\^\d{1,2}\^/g,'')
+      .replace(/\[?\s*\/[^/\n]{2,35}\/\s*\]?/g,' ')
+      .replace(/\b(infml|informal)\b/gi,'informal')
+      .replace(/\b(fml|formal)\b/gi,'formal')
+      .replace(/\bsb\b/g,'somebody')
+      .replace(/\bsth\b/g,'something')
+      .replace(/\be\.g\./g,'for example,')
+      .replace(/\bi\.e\./g,'that is,')
+      .replace(/\besp\./g,'especially')
+      .replace(/\bvs\.?\b/g,'versus')
+      .replace(/\s·\s/g,'. ')
+      .replace(/\(=/g,'(meaning ')
+      .replace(/≠/g,', which is the opposite of ')
+      .replace(/➜|→/g,', leading to ')
+      .replace(/\*\*|_/g,'')
+      .replace(/\s+/g,' ')
+      .trim();
+  }
+
+  function craftLecturerScript(rawBlock, secLetter, secTitle, pIdx, totalParas){
+    if(style==='verbatim'){
+      if(typeof rawBlock!=='string') return cleanSpoken(rawBlock.say||'');
+      return cleanSpoken(rawBlock);
+    }
+    const introPrefix = (pIdx===0 && (secLetter || secTitle))
+      ? `Section ${secLetter?secLetter+': ':''}${cleanSpoken(secTitle||'Key Concepts')}. `
+      : '';
+
+    if(typeof rawBlock!=='string' && rawBlock.tbl){
+      const rows=(rawBlock.tbl.rows||[]).filter(r=>r.some(c=>plain(c).trim()));
+      if(!rows.length) return introPrefix+'Let us examine the summary table on screen.';
+      const hasHead=rawBlock.tbl.head;
+      const headers=hasHead?rows[0].map(c=>cleanSpoken(c)).filter(Boolean):[];
+      const dataRows=hasHead?rows.slice(1):rows;
+      let script=introPrefix;
+      if(headers.length>=2){
+        script+=`In this table, notice how we organize ${headers.slice(0,3).join(', and ')}. `;
+      }else{
+        script+=`Take a look at this chart on your screen. `;
+      }
+      const sample=dataRows.slice(0,3);
+      sample.forEach((r,idx)=>{
+        const cols=r.map(c=>cleanSpoken(c)).filter(Boolean);
+        if(!cols.length) return;
+        const lead=idx===0?'First, look at ':idx===1?'Compare that with ':'And notice ';
+        if(cols.length>=2){
+          script+=`${lead}"${cols[0]}", which pairs with ${cols.slice(1).join(' — ')}. `;
+        }else{
+          script+=`${lead}${cols[0]}. `;
+        }
+      });
+      if(dataRows.length>3){
+        script+=`Take a moment to scan the remaining ${dataRows.length-3} rows on screen to see the full pattern.`;
+      }
+      return script.trim();
+    }
+
+    const s=String(rawBlock||'').trim();
+    if(/^\d{1,2}\s+\S/.test(plain(s)) && s.length<220){
+      const m=plain(s).match(/^(\d{1,2})\s+(.+)$/);
+      if(m) return `${introPrefix}Quick vocabulary note number ${m[1]}: this means ${cleanSpoken(m[2])}.`;
+    }
+
+    const bolds=[...s.matchAll(/\*\*([^*]+)\*\*/g)].map(m=>cleanSpoken(m[1])).filter(x=>x.length>1);
+    const brackets=[...s.matchAll(/\[([^\]]+)\]/g)].map(m=>cleanSpoken(m[1])).filter(Boolean);
+    const italics=[...s.matchAll(/(?:^|[\s(\[‘“])_([^_]+)_(?=$|[\s.,;:!?)\]’”])/g)].map(m=>cleanSpoken(m[1])).filter(x=>x.length>3);
+    const cleaned=cleanSpoken(s.replace(/\[([^\]]+)\]/g,' (meaning $1) '));
+
+    if(/^(Tip|Warning|Common mistakes?|Note|Error warning)\b/i.test(plain(s))){
+      return `${introPrefix}Here is an important exam tip to keep in mind: ${cleaned}`;
+    }
+
+    if(s.startsWith('**') && s.endsWith('**') && s.length<85){
+      return `${introPrefix}Now let's focus on ${cleanSpoken(s)}.`;
+    }
+
+    if(bolds.length>=2){
+      const uniqBolds=[...new Set(bolds)].slice(0,4);
+      let script=introPrefix;
+      script+=`Pay special attention to the key expressions highlighted here: ${uniqBolds.map(b=>'"'+b+'"').join(', ')}. `;
+      if(brackets.length){
+        script+=`Notice the meaning notes: ${brackets.slice(0,2).join('; ')}. `;
+      }
+      const sents=cleaned.split(/(?<=[.?!])\s+/).filter(x=>x.length>12);
+      if(sents.length<=2){
+        script+=`In context: ${cleaned}`;
+      }else{
+        script+=`For example, listen to how they work in context: ${sents.slice(0,2).join(' ')}`;
+      }
+      return script.trim();
+    }
+
+    if(bolds.length===1){
+      const target=bolds[0];
+      if(brackets.length){
+        return `${introPrefix}Focus on the expression "${target}", which means ${brackets[0]}. In our example: ${cleanSpoken(s.replace(/\[[^\]]+\]/g,''))}`;
+      }
+      return `${introPrefix}Notice how we use "${target}" here: ${cleaned}`;
+    }
+
+    if(italics.length>=1 && s.length>90){
+      const nonItalic=cleanSpoken(s.replace(/_([^_]+)_/g,''));
+      if(nonItalic.length>15 && nonItalic.length<180){
+        return `${introPrefix}Here is the key point: ${cleaned}`;
+      }
+    }
+
+    const transitions=['Let us look at this point: ','Notice here: ','Consider this example: ','Next, observe that ','In addition, '];
+    const lead = pIdx===0 ? introPrefix : (cleaned.length>110 ? transitions[pIdx % transitions.length] : '');
+    return (lead + cleaned).trim();
+  }
+
   function build(u){
     const bl=u.theoryBlocks||(u.theory||'').split('\n').filter(Boolean).map(s=>({t:'p',s}));
     const imgs=(u.images||[]).filter(i=>i.kind==='theory'&&!i.page);
-    const out=[{cover:true}];
+    const secTitles=[];
+    for(const b of bl){ if(b.t==='sec' && (b.h||b.l)) secTitles.push((b.l?b.l+' ':'')+(b.h||'')); }
+    const coverSay = style==='verbatim'
+      ? ((UNIT.key==='add'?'':'Unit '+u.n+'. ')+u.title)
+      : `Welcome to our interactive lecture on ${(BOOK&&BOOK.title)||'Cambridge In Use'}, ${UNIT.key==='add'?'':'Unit '+u.n+': '}${cleanSpoken(u.title)}. ${secTitles.length?'Today we will walk through '+secTitles.length+' main sections, covering '+secTitles.slice(0,3).map(cleanSpoken).join(', ')+'. ':''}Let's begin with the first section.`;
+    const out=[{cover:true, paras:[{cover:true, say:coverSay}]}];
     let cur=null;
     const push=()=>{ if(cur&&cur.paras.length) out.push(cur) };
     for(const b of bl){
@@ -762,13 +1034,16 @@ const Lecture=(()=>{
       if(b.t==='img'){ if(!cur) cur={l:'',h:'',paras:[]}; (cur.imgs=cur.imgs||[]).push({src:b.src}); continue }
       if(b.t==='tbl'){ if(!cur) cur={l:'',h:'',paras:[]};
         const rows=b.rows.filter(r=>r.some(c=>plain(c).trim()));
-        for(let k=0;k<rows.length;k+=4){ cur.paras.push({tbl:{rows:rows.slice(k,k+4),head:b.head&&k===0}, say:rows.slice(k,k+4).map(r=>r.filter(c=>c).map(c=>plain(c).replace(/\n/g,'. ')).join(': ')).join('. ')}); if(cur.paras.length>=5){ push(); cur={l:cur.l,h:cur.h?cur.h.replace(/ \(tiếp\)$/,'')+' (tiếp)':'',paras:[]} } }
+        for(let k=0;k<rows.length;k+=4){
+          const sliceRows=rows.slice(k,k+4);
+          cur.paras.push({tbl:{rows:sliceRows,head:b.head&&k===0}, say:sliceRows.map(r=>r.filter(c=>c).map(c=>plain(c).replace(/\n/g,'. ')).join(': ')).join('. ')});
+          if(cur.paras.length>=5){ push(); cur={l:cur.l,h:cur.h?cur.h.replace(/ \(tiếp\)$/,'')+' (tiếp)':'',paras:[]} }
+        }
         continue }
       if(!cur) cur={l:'',h:'',paras:[]};
-      if(b.t==='h'){ if(!cur.paras.length){cur.h=cur.h&&!cur.l?cur.h+' · '+b.s:(cur.h||b.s);continue} if(!cur.l||plain(b.s).length<50){ push(); cur={l:cur.l&&!cur.l?'':'',h:b.s,paras:[]}; continue } }
+      if(b.t==='h'){ if(!cur.paras.length){cur.h=cur.h&&!cur.l?cur.h+' · '+b.s:(cur.h||b.s);continue} if(!cur.l||plain(b.s).length<50){ push(); cur={l:'',h:b.s,paras:[]}; continue } }
       const txt=b.t==='h'?'**'+b.s+'**':b.s;
       if(plain(txt).replace(/[^A-Za-z]/g,'').length<2) continue;
-      // merge very short lines into previous para for nicer slides
       const last=cur.paras[cur.paras.length-1];
       if(last && typeof last==='string' && plain(last).length<60 && plain(txt).length<60 && !/[.:?!]$/.test(plain(last))) cur.paras[cur.paras.length-1]=last+' · '+txt;
       else cur.paras.push(txt);
@@ -776,115 +1051,271 @@ const Lecture=(()=>{
     }
     push();
     const anyInline=bl.some(b=>b.t==='img');
-    let k=0; for(const s of out){ if(s.cover) continue; if(s.imgs&&s.imgs.length) s.img=s.imgs[0]; else if(!anyInline&&imgs.length){ s.img=imgs[k%imgs.length]; k++ } }
+    let k=0;
+    for(const s of out){
+      if(s.cover) continue;
+      if(s.imgs&&s.imgs.length) s.img=s.imgs[0];
+      else if(!anyInline&&imgs.length){ s.img=imgs[k%imgs.length]; k++ }
+      s.scripts = s.paras.map((p,idx)=>craftLecturerScript(p, s.l, s.h||u.title, idx, s.paras.length));
+    }
+    out[0].scripts=[coverSay];
+    if(style==='ai' && aiScript){
+      out.forEach((s,i)=>{ if(s.cover) return; s.scripts=s.scripts.map((x,j)=>cleanSpoken(aiScript['s'+i+'p'+j]||x)) });
+      if(aiScript.intro) out[0].scripts=[cleanSpoken(aiScript.intro)];
+      const last=out[out.length-1]; if(aiScript.outro&&last&&!last.cover) last.scripts[last.scripts.length-1]+=' '+cleanSpoken(aiScript.outro);
+    }
+
+    slideOffsets=[];
+    let acc=0;
+    for(let i=0;i<out.length;i++){
+      const pOffsets=[];
+      const sc=out[i].scripts||[''];
+      for(let j=0;j<sc.length;j++){
+        const len=Math.max(10, sc[j].length);
+        pOffsets.push({start:acc, len, text:sc[j]});
+        acc+=len;
+      }
+      slideOffsets.push(pOffsets);
+    }
+    totalChars=Math.max(1, acc);
     return out;
   }
+
+  function fmtTime(sec){
+    sec=Math.max(0, Math.round(sec));
+    const m=Math.floor(sec/60), s=sec%60;
+    return `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  }
+
+  function currentGlobalChars(){
+    if(!slideOffsets[si] || !slideOffsets[si][pi]) return 0;
+    const seg=slideOffsets[si][pi];
+    return seg.start + Math.min(seg.len, charOffset);
+  }
+
+  function updateScrubberUI(){
+    const curC=currentGlobalChars();
+    const cps=CHARS_PER_SEC * rate;
+    const curSec=curC / cps;
+    const totSec=totalChars / cps;
+    const seekEl=$('#lecSeek');
+    if(seekEl && document.activeElement!==seekEl){
+      seekEl.value=String(Math.round(1000 * curC / totalChars));
+    }
+    const timeEl=$('#lecTime');
+    if(timeEl) timeEl.textContent=`${fmtTime(curSec)} / ${fmtTime(totSec)}`;
+    const capEl=$('#lecCap');
+    if(capEl) capEl.textContent=`Slide ${si+1}/${slides.length}`;
+    updateLecturerSub();
+  }
+
+  function updateLecturerSub(){
+    const noteEl=$('#lecNoteText');
+    if(!noteEl) return;
+    const txt=(slides[si]&&slides[si].scripts&&slides[si].scripts[pi])||'';
+    if(!txt){ noteEl.textContent=''; return }
+    const off=Math.max(0, Math.min(txt.length-1, charOffset));
+    let wStart=off, wEnd=off;
+    while(wStart>0 && /\S/.test(txt[wStart-1])) wStart--;
+    while(wEnd<txt.length && /\S/.test(txt[wEnd])) wEnd++;
+    const before=esc(txt.slice(0,wStart));
+    const word=esc(txt.slice(wStart,wEnd));
+    const after=esc(txt.slice(wEnd));
+    noteEl.innerHTML=word?`${before}<mark>${word}</mark>${after}`:esc(txt);
+  }
+
+  function seekToGlobalChars(targetC){
+    targetC=Math.max(0, Math.min(totalChars-1, targetC));
+    let targetSi=0, targetPi=0, targetOff=0;
+    outer: for(let i=0;i<slideOffsets.length;i++){
+      for(let j=0;j<slideOffsets[i].length;j++){
+        const seg=slideOffsets[i][j];
+        if(targetC < seg.start + seg.len || (i===slideOffsets.length-1 && j===slideOffsets[i].length-1)){
+          targetSi=i; targetPi=j;
+          targetOff=Math.max(0, targetC - seg.start);
+          const txt=seg.text||'';
+          while(targetOff>0 && /\S/.test(txt[targetOff-1])) targetOff--;
+          break outer;
+        }
+      }
+    }
+    const slideChanged = (targetSi !== si);
+    si=targetSi; pi=targetPi; charOffset=targetOff;
+    if(slideChanged) render();
+    else mark();
+    updateScrubberUI();
+    if(playing){ stopSpeech(); speak(charOffset); }
+  }
+
+  function seekBySeconds(deltaSec){
+    const deltaChars = Math.round(deltaSec * CHARS_PER_SEC * rate);
+    seekToGlobalChars(currentGlobalChars() + deltaChars);
+  }
+
   function el(){ let d=$('#lec'); if(d) return d;
     d=document.createElement('div'); d.id='lec';
     d.innerHTML=`<div class="bg"><i></i><i></i><i></i></div>
       <div class="top"><span class="t" id="lecT"></span><button class="x" id="lecX">✕ Đóng</button></div>
       <div class="stage" id="lecStage"></div>
-      <div class="ctl"><button id="lecPrev" title="Slide trước">⏮</button><button class="play" id="lecPlay">▶ Phát</button><button id="lecNext" title="Slide sau">⏭</button>
-        <div class="prog"><i id="lecProg"></i></div><span class="cap" id="lecCap"></span>
-        <select id="lecRate" title="Tốc độ đọc"><option value="0.8">0.8×</option><option value="0.9">0.9×</option><option value="1">1×</option><option value="1.15">1.15×</option><option value="1.3">1.3×</option></select>
-        <select id="lecVoice" title="Giọng đọc"></select><button id="lecAI" title="Dùng AI (Gemini) soạn lời giảng như giảng viên">🎓 Lời giảng AI</button></div>`;
+      <div class="ctl">
+        <button id="lecPrev" title="Slide trước (Shift + ←)">⏮</button>
+        <button id="lecRew" title="Tua lùi 5 giây (←)">⏪ -5s</button>
+        <button class="play" id="lecPlay">▶ Giảng bài</button>
+        <button id="lecFwd" title="Tua tới 5 giây (→)">+5s ⏩</button>
+        <button id="lecNext" title="Slide sau (Shift + →)">⏭</button>
+        <div class="seek-wrap">
+          <input type="range" class="seek" id="lecSeek" min="0" max="1000" step="1" value="0" title="Kéo thanh tiến độ để tua bài giảng">
+          <span class="time" id="lecTime">00:00 / 00:00</span>
+        </div>
+        <span class="cap" id="lecCap"></span>
+        <select id="lecStyle" title="Chế độ giảng bài">
+          <option value="lecturer">🎓 Giảng viên (Lecturer)</option>
+          <option value="verbatim">📖 Đọc nguyên văn</option>
+          <option value="ai">🤖 Lời giảng AI (Gemini)</option>
+        </select>
+        <select id="lecRate" title="Tốc độ đọc">
+          <option value="0.75">0.75×</option>
+          <option value="0.9">0.9×</option>
+          <option value="1">1×</option>
+          <option value="1.15">1.15×</option>
+          <option value="1.25">1.25×</option>
+          <option value="1.5">1.5×</option>
+          <option value="1.75">1.75×</option>
+          <option value="2">2×</option>
+        </select>
+        <select id="lecVoice" title="Giọng giảng viên (Narrator / Lecturer)"></select>
+      </div>`;
     document.body.appendChild(d);
-    $('#lecX').onclick=close; $('#lecPrev').onclick=()=>go(si-1); $('#lecNext').onclick=()=>go(si+1);
+    $('#lecX').onclick=close;
+    $('#lecPrev').onclick=()=>go(si-1);
+    $('#lecNext').onclick=()=>go(si+1);
+    $('#lecRew').onclick=()=>seekBySeconds(-5);
+    $('#lecFwd').onclick=()=>seekBySeconds(5);
     $('#lecPlay').onclick=()=>playing?pause():play();
-    $('#lecAI').onclick=e=>{ if(aiScript){ aiScript=null; e.target.textContent='🎓 Lời giảng AI'; return } aiPrepare(e.target) };
-    $('#lecRate').value=String(rate); $('#lecRate').onchange=e=>{rate=+e.target.value;store.set('lecRate',rate); if(playing){stopSpeech();speak()}};
-    $('#lecVoice').onchange=e=>{voiceName=e.target.value;store.set('lecVoice',voiceName); if(playing){stopSpeech();speak()}};
-    const fill=()=>{ const vs=voices(), v=pickVoice(); $('#lecVoice').innerHTML=vs.length?vs.map(x=>`<option ${v&&x.name===v.name?'selected':''}>${esc(x.name)}</option>`).join(''):'<option>(máy chưa có giọng tiếng Anh)</option>' };
+    $('#lecSeek').oninput=e=>{
+      const ratio=+e.target.value/1000;
+      seekToGlobalChars(Math.round(ratio * totalChars));
+    };
+    if(![0.75,0.9,1,1.15,1.25,1.5,1.75,2].includes(+rate)) rate=1;
+    $('#lecRate').value=String(rate);
+    $('#lecRate').onchange=e=>{
+      rate=+e.target.value;
+      store.set('lecRate',rate);
+      updateScrubberUI();
+      if(playing){ const keepOff=charOffset; stopSpeech(); speak(keepOff); }
+    };
+    $('#lecStyle').value=style;
+    $('#lecStyle').onchange=e=>{
+      style=e.target.value;
+      store.set('lecStyle',style);
+      applyStyle();
+    };
+    $('#lecVoice').onchange=e=>{
+      voiceName=e.target.value;
+      store.set('lecVoice',voiceName);
+      if(playing){ const keepOff=charOffset; stopSpeech(); speak(keepOff); }
+    };
+    const fill=()=>{
+      const vs=voices().slice().sort((a,b)=>scoreVoice(b)-scoreVoice(a));
+      const v=pickVoice();
+      $('#lecVoice').innerHTML=vs.length?vs.map(x=>`<option value="${esc(x.name)}" ${v&&x.name===v.name?'selected':''}>🎙️ ${esc(x.name)}</option>`).join(''):'<option value="">(máy chưa có giọng tiếng Anh)</option>';
+    };
     fill(); if(synth) synth.onvoiceschanged=fill;
-    document.addEventListener('keydown',e=>{ if(!$('#lec.on')) return; if(e.key==='Escape') close(); if(e.key===' '){e.preventDefault();playing?pause():play()} if(e.key==='ArrowRight') go(si+1); if(e.key==='ArrowLeft') go(si-1) });
+    document.addEventListener('keydown',e=>{
+      if(!$('#lec.on')) return;
+      if(e.key==='Escape') close();
+      if(e.key===' '){e.preventDefault();playing?pause():play()}
+      if(e.key==='ArrowRight'){ e.preventDefault(); if(e.shiftKey) go(si+1); else seekBySeconds(5); }
+      if(e.key==='ArrowLeft'){ e.preventDefault(); if(e.shiftKey) go(si-1); else seekBySeconds(-5); }
+    });
     return d;
   }
+
   const BOOKSVG=`<svg viewBox="0 0 120 120" fill="none"><circle cx="60" cy="60" r="56" fill="rgba(255,255,255,.08)"/><path d="M28 38c10-4 22-4 32 3v46c-10-7-22-7-32-3z" fill="#ffd166"/><path d="M92 38c-10-4-22-4-32 3v46c10-7 22-7 32-3z" fill="#fff" opacity=".9"/><path d="M60 41v46" stroke="#0d1020" stroke-width="2"/><circle cx="86" cy="28" r="6" fill="#2bb3a3"><animate attributeName="r" values="4;8;4" dur="2s" repeatCount="indefinite"/></circle></svg>`;
+
   function render(){
     const s=slides[si]; const st=$('#lecStage');
+    const noteBar=`<div class="lec-note"><span class="badge">${style==='lecturer'?'🎙️ Giảng viên':style==='ai'?'🤖 AI giảng':'📖 Nguyên văn'}</span><div class="spoken" id="lecNoteText"></div></div>`;
     if(s.cover){
-      st.innerHTML=`<div class="slide noimg cover"><div>${BOOKSVG}<div class="k">${esc(BOOK.title)}</div><h2>${UNIT.key==='add'?'':'Unit '+esc(unit.n)+'<br>'}${esc(unit.title)}</h2><p style="opacity:.75">${slides.length-2} phần · bấm ▶ Phát hoặc phím Space</p></div></div>`;
-    }else if(s.outro){
-      st.innerHTML=`<div class="slide noimg cover"><div>${BOOKSVG}<div class="k">Hoàn thành</div><h2>Well done! 🎉</h2><p style="opacity:.8">Giờ hãy sang tab <b>Bài tập</b> để luyện những gì vừa học.</p></div></div>`;
+      st.innerHTML=`<div class="slide noimg cover"><div>${BOOKSVG}<div class="k">${esc(BOOK.title)}</div><h2>${UNIT.key==='add'?'':'Unit '+esc(unit.n)+'<br>'}${esc(unit.title)}</h2><p style="opacity:.75">${slides.length-1} phần · bấm ▶ Giảng bài hoặc phím Space · dùng thanh trượt hoặc phím ←/→ để tua</p>${noteBar}</div></div>`;
     }else{
-      st.innerHTML=`<div class="slide ${s.img?'':'noimg'}"><div><div class="stitle">${s.l?`<span class="L">${esc(s.l)}</span>`:''}<span>${md(s.h||unit.title)}</span></div>${s.paras.map((p,i)=>`<div class="para ${i<pi?'done':''} ${i===pi?'cur':''}" data-i="${i}">${typeof p==='string'?md(p):tableHTML(p.tbl)}</div>`).join('')}</div>${s.img?`<div class="pic">${(s.imgs&&s.imgs.length?s.imgs.slice(0,3):[s.img]).map(i=>`<img src="${i.src}" alt="hình minh hoạ">`).join('')}</div>`:''}</div>`;
-      st.querySelectorAll('.para').forEach(p=>p.onclick=()=>{pi=+p.dataset.i;mark();if(playing){stopSpeech();speak()}});
+      st.innerHTML=`<div class="slide ${s.img?'':'noimg'}"><div><div class="stitle">${s.l?`<span class="L">${esc(s.l)}</span>`:''}<span>${md(s.h||unit.title)}</span></div>${s.paras.map((p,i)=>`<div class="para ${i<pi?'done':''} ${i===pi?'cur':''}" data-i="${i}">${typeof p==='string'?md(p):tableHTML(p.tbl)}</div>`).join('')}${noteBar}</div>${s.img?`<div class="pic">${(s.imgs&&s.imgs.length?s.imgs.slice(0,3):[s.img]).map(i=>`<img src="${i.src}" alt="hình minh hoạ">`).join('')}</div>`:''}</div>`;
+      st.querySelectorAll('.para').forEach(p=>p.onclick=()=>{
+        pi=+p.dataset.i; charOffset=0; mark(); updateScrubberUI();
+        if(playing){ stopSpeech(); speak(0); }
+      });
     }
-    $('#lecProg').style.width=Math.round(100*si/Math.max(1,slides.length-1))+'%';
-    $('#lecCap').textContent=`${si+1}/${slides.length}`;
+    updateScrubberUI();
   }
-  function mark(){ $('#lecStage').querySelectorAll('.para').forEach((p,i)=>{p.classList.toggle('cur',i===pi);p.classList.toggle('done',i<pi); if(i===pi) p.scrollIntoView({block:'nearest',behavior:'smooth'})}) }
-  function stopSpeech(){ token++; if(synth) synth.cancel() }
-  let aiScript=null;
-  const pick=(arr,seed)=>arr[Math.abs(seed)%arr.length];
-  const tidy=s=>s.replace(/\be\.g\./g,'for example,').replace(/\betc\./g,'and so on').replace(/\bsb\b/g,'somebody').replace(/\bsth\b/g,'something').replace(/\binfml\b/g,'informal').replace(/\bfml\b/g,'formal').replace(/➜\s*/g,'see ').replace(/\s·\s/g,'. ').replace(/\s+/g,' ').trim();
-  function lecturize(raw,seed){
-    const bolds=[...raw.matchAll(/\*\*([^*]+)\*\*/g)].map(m=>plain(m[1]).trim()).filter(x=>x.length>1);
-    let s=raw;
-    let defs=0;
-    s=s.replace(/\*\*([^*]+)\*\*\s*\[([^\]]{2,80})\]/g,(m,w,d)=>{defs++; return `${plain(w)}, which means ${plain(d)}.`});
-    s=s.replace(/\(not ([^)]+)\)/g,(m,x)=>` — and notice, we don't say "${plain(x)}".`);
-    s=s.replace(/\(=\s*([^)]+)\)/g,(m,x)=>`, in other words, ${plain(x)},`);
-    s=s.replace(/\[([^\]]{2,80})\]/g,(m,x)=>`, meaning ${plain(x)},`);
-    let out=tidy(plain(s));
-    if(bolds.length && !defs){
-      const uniq=[...new Set(bolds)].slice(0,4);
-      if(uniq.length===1) out+=' '+pick([`So the key expression here is "${uniq[0]}".`,`Remember: "${uniq[0]}".`,`Pay attention to "${uniq[0]}".`],seed);
-      else out+=' '+pick([`The key expressions are: ${uniq.slice(0,-1).join(', ')} and ${uniq[uniq.length-1]}.`,`Notice the highlighted words: ${uniq.join(', ')}.`],seed);
-    }
-    return out;
+
+  function mark(){
+    $('#lecStage').querySelectorAll('.para').forEach((p,i)=>{
+      p.classList.toggle('cur',i===pi);
+      p.classList.toggle('done',i<pi);
+      if(i===pi) p.scrollIntoView({block:'nearest',behavior:'smooth'});
+    });
   }
-  function narrate(s,i){
-    const sid=slides.indexOf(s);
-    if(aiScript){ const k=s.cover?'intro':s.outro?'outro':`s${sid}p${i}`; if(aiScript[k]) return aiScript[k] }
-    if(s.cover) return `Hello, and welcome! In this lesson from ${BOOK.title}, we're going to look at ${UNIT.key==='add'?'':'Unit '+unit.n+': '}${unit.title}. Let's get started.`;
-    if(s.outro) return `And that's the end of this unit. Well done! Now try the exercises to practise what you've just learned. See you in the next lesson.`;
-    const P=s.paras[i]; let pre='';
-    if(i===0){ const first=!slides.slice(1,sid).some(x=>x.l===s.l&&!x.outro);
-      if(s.l&&first) pre=`Section ${s.l}${s.h?': '+tidy(plain(s.h)):''}. `+pick(["Let's take a look.","Here's the idea.","Let's see how this works.","Listen carefully."],sid)+' ';
-      else if(s.h&&first) pre=tidy(plain(s.h))+'. ';
-      else pre=pick(["Let's continue.","Now, moving on.","Here's more.","Next."],sid)+' ' }
-    if(P&&typeof P!=='string'){ const rows=P.tbl.rows.filter(r=>r.some(c=>plain(c).trim())); let x=pre+pick(["Let's look at this table.","Have a look at this table."],sid)+' ';
-      rows.forEach((r,k)=>{ if(P.tbl.head&&k===0) return; const cells=r.filter(c=>plain(c).trim()).map(c=>tidy(plain(c).replace(/\n/g,'. '))); x+=(k<=1?'First, ':pick(['Next, ','Then, ','And ','Also, '],k))+cells.join(': ')+'. ' }); return x }
-    return pre+lecturize(P||'',sid*7+i);
+
+  function stopTimer(){ if(timerId){ clearInterval(timerId); timerId=null; } }
+  function startTimer(fullLen){
+    stopTimer();
+    lastTickTime=performance.now();
+    timerId=setInterval(()=>{
+      if(!playing) return;
+      const now=performance.now();
+      const dt=(now-lastTickTime)/1000;
+      lastTickTime=now;
+      charOffset=Math.min(fullLen, charOffset + dt * CHARS_PER_SEC * rate);
+      updateScrubberUI();
+    }, 120);
   }
-  function textFor(){ const s=slides[si]; return narrate(s,pi) }
-  async function aiPrepare(btn){
-    if(!AI.getKey()){ AI.dlg(); return }
-    const ck='lec:'+state.book+':'+unit.n+':'+AI.getModel();
-    try{ const c=localStorage.getItem(ck); if(c){ aiScript=JSON.parse(c); btn.textContent='🎓 Lời giảng AI ✓'; return } }catch(e){}
-    btn.textContent='🎓 AI đang soạn…'; btn.disabled=true;
-    const items={}; slides.forEach((s,si2)=>{ if(s.cover||s.outro) return; s.paras.forEach((P,i)=>{ items[`s${si2}p${i}`]=(i===0&&(s.l||s.h)?`[Section ${s.l||''} ${plain(s.h||'')}] `:'')+(typeof P==='string'?plain(P):P.tbl.rows.map(r=>r.map(c=>plain(c)).join(' | ')).join(' / ')) }) });
-    const prompt=`You are a warm, engaging English teacher recording an audio lecture for a Vietnamese learner, based on "${BOOK.title}", Unit ${unit.n}: ${unit.title}.
-For each item below write what you SAY while that paragraph is on screen: explain it like a lecturer (not just reading it aloud) — introduce the point, read the key example(s) naturally, explain meaning and usage briefly, maybe give one extra simple example or a tip about a common mistake. Spoken English only, no markdown, no lists, 2–5 sentences per item. Also write "intro" (greeting + what the lesson covers) and "outro" (short recap + encouragement to do the exercises).
-Return JSON object with the same keys plus "intro" and "outro".
-Items:
-${JSON.stringify(items)}`;
-    try{ const out=await AI.call(prompt,true); aiScript=JSON.parse(out); try{localStorage.setItem(ck,JSON.stringify(aiScript))}catch(e){} btn.textContent='🎓 Lời giảng AI ✓' }
-    catch(e){ btn.textContent='🎓 Lời giảng AI (lỗi)'; $('#lecCap').textContent='AI lỗi: '+e.message }
-    btn.disabled=false;
-  }
-  function speak(){
+
+  function stopSpeech(){ token++; stopTimer(); if(synth) synth.cancel() }
+
+  function speak(startOff=0){
     if(!synth){ $('#lecCap').textContent='Trình duyệt này không hỗ trợ đọc to'; return }
-    const my=++token; const s=slides[si];
-    const txt=textFor();
-    const u=new SpeechSynthesisUtterance(txt); const v=pickVoice(); if(v){u.voice=v;u.lang=v.lang} else u.lang='en-GB'; u.rate=rate;
-    u.onend=()=>{ if(my!==token||!playing) return; advance() };
-    u.onerror=()=>{ if(my!==token) return; if(playing) setTimeout(advance,400) };
+    const my=++token;
+    const s=slides[si];
+    const fullTxt=(s.scripts&&s.scripts[pi])||'';
+    curText=fullTxt;
+    charOffset=Math.max(0, Math.min(fullTxt.length, startOff||0));
+    const subTxt=fullTxt.slice(charOffset).trim();
+    if(!subTxt){ advance(); return; }
+    updateScrubberUI();
+    startTimer(fullTxt.length);
+
+    const u=new SpeechSynthesisUtterance(subTxt);
+    const v=pickVoice();
+    if(v){ u.voice=v; u.lang=v.lang; } else u.lang='en-GB';
+    u.rate=rate;
+    u.pitch=style==='lecturer'?0.98:1.0;
+    const baseOff=charOffset;
+    u.onboundary=e=>{
+      if(my!==token) return;
+      if(typeof e.charIndex==='number'){
+        charOffset=Math.min(fullTxt.length, baseOff + e.charIndex);
+        lastTickTime=performance.now();
+        updateScrubberUI();
+      }
+    };
+    u.onend=()=>{ if(my!==token||!playing) return; stopTimer(); advance() };
+    u.onerror=()=>{ if(my!==token) return; stopTimer(); if(playing) setTimeout(advance,400) };
     synth.speak(u);
   }
+
   function advance(){
+    charOffset=0;
     const s=slides[si];
-    if(s.outro){ pause(); $('#lecCap').textContent='Hết bài ✓'; return }
-    if(s.cover){ if(si+1<slides.length){ si++; pi=0; render(); setTimeout(()=>{ if(playing) speak() },500) } else pause(); return }
-    if(pi+1<s.paras.length){ pi++; mark(); speak(); return }
-    if(si+1<slides.length){ si++; pi=0; render(); setTimeout(()=>{ if(playing) speak() },500); return }
+    if(s.cover){ if(si+1<slides.length){ si++; pi=0; render(); setTimeout(()=>{ if(playing) speak(0) },350) } else pause(); return }
+    if(pi+1<s.paras.length){ pi++; mark(); speak(0); return }
+    if(si+1<slides.length){ si++; pi=0; render(); setTimeout(()=>{ if(playing) speak(0) },350); return }
     pause(); $('#lecCap').textContent='Hết bài ✓';
   }
-  function play(){ playing=true; $('#lecPlay').textContent='⏸ Dừng'; speak() }
-  function pause(){ playing=false; stopSpeech(); $('#lecPlay').textContent='▶ Phát' }
-  function go(n){ if(n<0||n>=slides.length) return; stopSpeech(); si=n; pi=0; render(); if(playing) setTimeout(speak,350) }
-  function open(u){ unit=u; aiScript=null; const ab=$('#lecAI'); if(ab) ab.textContent='🎓 Lời giảng AI'; slides=build(u); slides.push({outro:true,paras:[]}); si=0; pi=0; el().classList.add('on'); $('#lecT').textContent=(BOOK.title||'')+' — '+u.title; render(); pause() }
+
+  function play(){ playing=true; $('#lecPlay').textContent='⏸ Tạm dừng'; speak(charOffset) }
+  function pause(){ playing=false; stopSpeech(); $('#lecPlay').textContent='▶ Giảng bài'; updateScrubberUI() }
+  function go(n){ if(n<0||n>=slides.length) return; stopSpeech(); si=n; pi=0; charOffset=0; render(); if(playing) setTimeout(()=>speak(0),250) }
+  function open(u){ unit=u; aiScript=null; el().classList.add('on'); $('#lecStyle').value=style; slides=[]; slides=build(u); si=0; pi=0; charOffset=0; $('#lecT').textContent=(BOOK.title||'')+' — '+(UNIT.key==='add'?'':'Unit '+u.n+': ')+u.title; render(); pause(); if(style==='ai') applyStyle() }
   function close(){ pause(); const d=$('#lec'); if(d) d.classList.remove('on') }
   return {open,close};
 })();
