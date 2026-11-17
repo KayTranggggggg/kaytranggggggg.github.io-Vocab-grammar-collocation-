@@ -110,7 +110,7 @@ textarea.free{width:100%;min-height:80px;margin-top:10px;padding:8px 10px;border
 .imgs,.keyall{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 14px;margin:0 0 16px}
 .imgs summary,.keyall summary{cursor:pointer;font-weight:600;font-size:14px}
 .imgrow{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px}
-.imgrow img{max-width:100%;max-height:320px;border-radius:8px;border:1px solid var(--line);background:#fff}
+.imgrow img{max-width:100%;max-height:none;border-radius:8px;border:1px solid var(--line);background:#fff}
 .dataBtn{border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:8px;padding:6px 10px;white-space:nowrap}
 .empty{padding:60px 20px;text-align:center;color:var(--muted)}
 .unit-sum{display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin:-4px 0 14px;color:var(--muted);font-size:13.5px}
@@ -236,14 +236,16 @@ async function idbGet(id){try{const db=await idb();return await new Promise(r=>{
 async function idbPut(id,v){const db=await idb();return new Promise((res,rej)=>{const tx=db.transaction('books','readwrite');tx.objectStore('books').put(v,id);tx.oncomplete=res;tx.onerror=()=>rej(tx.error)})}
 async function loadBook(id){
   window.BOOKS=window.BOOKS||{};
-  if(window.BOOKS[id]) return window.BOOKS[id];
+  if(window.BOOKS[id]) return mergeExtra(id);
   const fromDb=await idbGet(id);
   if(fromDb){window.BOOKS[id]=fromDb;return fromDb}
   if(!window.PUBLIC_BUILD){
-    try{await new Promise((res,rej)=>{const s=document.createElement('script');s.src='data/'+id+'.js';s.onload=res;s.onerror=rej;document.head.appendChild(s)}); if(window.BOOKS[id]) return window.BOOKS[id]}catch(e){}
+    try{await new Promise((res,rej)=>{const s=document.createElement('script');s.src='data/'+id+'.js';s.onload=res;s.onerror=rej;document.head.appendChild(s)}); if(window.BOOKS[id]) return mergeExtra(id)}catch(e){}
   }
   return null;
 }
+function applyImages(book,imgs){ for(const u of book.units){ const add=imgs[String(u.n)]; if(add) u.images=(u.images||[]).filter(i=>!i.page).concat(add) } return book }
+function mergeExtra(id){ const b=window.BOOKS[id]; if(window.EXTRA_IMAGES&&window.EXTRA_IMAGES[id]&&!b.__img){ applyImages(b,window.EXTRA_IMAGES[id]); b.__img=1 } return b }
 async function importFiles(files){
   let n=0;
   for(const f of files){
@@ -252,6 +254,10 @@ async function importFiles(files){
       if(/^\s*window\.BOOKS/.test(txt)){ const i=txt.indexOf(']=')+2; data=JSON.parse(txt.slice(i).replace(/;\s*$/,'')); data={books:{[data.id]:data}} }
       else data=JSON.parse(txt);
     }catch(e){ alert('File '+f.name+' không đúng định dạng dữ liệu sách.'); continue }
+    if(data.images){
+      for(const id in data.images){ const b=(window.BOOKS&&window.BOOKS[id])||await idbGet(id); if(!b){ alert('Hãy nạp file dữ liệu sách (inuse-data.json) trước, rồi mới nạp file hình.'); continue } applyImages(b,data.images[id]); await idbPut(id,b); window.BOOKS[id]=b; n++ }
+      continue;
+    }
     const books=data.books||(data.id&&data.units?{[data.id]:data}:{});
     for(const id in books){ await idbPut(id,books[id]); window.BOOKS=window.BOOKS||{}; window.BOOKS[id]=books[id]; n++ }
   }
@@ -262,8 +268,9 @@ function importScreen(){
    <div class="sec"><span class="L">↥</span>Nạp dữ liệu sách</div>
    <p>Trang web này chỉ chứa phần app. Nội dung sách nằm trong file dữ liệu riêng trên máy bạn (<b>inuse-data.json</b>).</p>
    <p>Chọn file đó một lần. Dữ liệu được lưu trong trình duyệt này, những lần sau mở lại là dùng được ngay.</p>
+   <p>Muốn xem trang sách gốc có hình của cuốn Vocab Upper-Int thì nạp thêm file <b>inuse-hinh-vu.json</b> (có thể chọn cả 2 file cùng lúc).</p>
    <p><input type="file" id="imp" accept=".json,.js" multiple></p><p class="hint" id="impMsg"></p></div>`;
-  $('#imp').onchange=async e=>{ $('#impMsg').textContent='Đang nạp…'; const n=await importFiles(e.target.files); $('#impMsg').textContent='Đã nạp '+n+' cuốn.'; if(n) selectBook(state.book) };
+  $('#imp').onchange=async e=>{ $('#impMsg').textContent='Đang nạp…'; const n=await importFiles(e.target.files); $('#impMsg').textContent='Đã nạp xong ('+n+' mục).'; if(n) selectBook(state.book) };
 }
 
 function renderBooks(){
@@ -407,7 +414,8 @@ function renderUnit(){
    <div class="unit-sum" id="unitSum"></div>
    <div class="tabs">${!isAdd?`<button class="tab ${tab==='theory'?'active':''}" data-t="theory">Lý thuyết</button>`:''}<button class="tab ${tab==='ex'?'active':''}" data-t="ex">Bài tập (${nEx})</button></div>`;
   const imgs=(u.images||[]).filter(i=>i.kind===(tab==='theory'?'theory':'ex'));
-  const imgHtml=imgs.length?`<details class="imgs" open><summary>Hình minh hoạ trong sách (${imgs.length})</summary><div class="imgrow">${imgs.map(i=>`<img src="${i.src}" alt="hình minh hoạ" loading="lazy">`).join('')}</div></details>`:'';
+  const isPage=imgs.length&&imgs[0].page;
+  const imgHtml=imgs.length?`<details class="imgs" ${isPage?'':'open'}><summary>${isPage?'Xem trang sách gốc (có hình minh hoạ)':'Hình minh hoạ trong sách ('+imgs.length+')'}</summary><div class="imgrow">${imgs.map(i=>`<img src="${i.src}" alt="hình minh hoạ" loading="lazy" style="${i.page?'width:100%':''}">`).join('')}</div></details>`:'';
   if(tab==='theory' && !isAdd){
     html+=imgHtml+`<div class="theory">${renderTheory(u.theory||'')}</div>`;
     html+=`<p class="hint">Hình minh hoạ và bảng trong sách gốc không chuyển được sang chữ nên có thể thiếu hoặc bị xếp lộn dòng.</p>`;
