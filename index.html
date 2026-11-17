@@ -1,0 +1,488 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>In Use Practice</title>
+<style>
+:root{
+  --bg:#f6f7f9; --panel:#ffffff; --ink:#1d2330; --muted:#667085; --line:#e4e7ec;
+  --accent:#2f6fde; --accent-soft:#e8f0fd; --ok:#1a7f4b; --ok-soft:#e4f5ec; --bad:#c23934; --bad-soft:#fdecea;
+  --warn:#9a6700; --warn-soft:#fff6dd;
+  --c-vu:#1f8a70; --c-va:#7a4fd1; --c-gi:#d1562b; --c-ga:#2f6fde; --c-ci:#b4377a;
+  --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#12151b; --panel:#1a1f27; --ink:#e7eaf0; --muted:#98a2b3; --line:#2a313c;
+    --accent:#6ea0ff; --accent-soft:#1f2b40; --ok:#4cc38a; --ok-soft:#173226; --bad:#ff7b72; --bad-soft:#3a1d1c;
+    --warn:#e3b341; --warn-soft:#3a2f12;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#12151b; --panel:#1a1f27; --ink:#e7eaf0; --muted:#98a2b3; --line:#2a313c;
+  --accent:#6ea0ff; --accent-soft:#1f2b40; --ok:#4cc38a; --ok-soft:#173226; --bad:#ff7b72; --bad-soft:#3a1d1c;
+  --warn:#e3b341; --warn-soft:#3a2f12;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{background:var(--bg);color:var(--ink);font:15px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif}
+button{font:inherit;cursor:pointer}
+header{position:sticky;top:0;z-index:20;background:var(--panel);border-bottom:1px solid var(--line);display:flex;align-items:center;gap:12px;padding:8px 16px;min-height:64px}
+.brand{font-weight:700;letter-spacing:.2px;white-space:nowrap;display:flex;align-items:center;gap:8px}
+.menu-btn{display:none;border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:8px;padding:6px 10px}
+.books{display:flex;gap:8px;overflow-x:auto;flex:1;padding:2px}
+.book{display:flex;align-items:center;gap:10px;border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:12px;padding:6px 12px 6px 6px;white-space:nowrap;transition:background .15s,border-color .15s}
+.book:hover{border-color:var(--muted)}
+.book .ico{width:38px;height:38px;border-radius:9px;display:grid;place-items:center;color:#fff;font-weight:800;font-size:13px;letter-spacing:.5px;flex:none}
+.book .ico svg{width:22px;height:22px}
+.book .bt{display:flex;flex-direction:column;line-height:1.2;text-align:left}
+.book .bt b{font-size:13.5px}
+.book .bt small{color:var(--muted);font-size:11.5px}
+.book.active{border-color:var(--bk);background:color-mix(in srgb,var(--bk) 10%,var(--panel))}
+.theme-btn{border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:8px;padding:6px 10px}
+.layout{display:grid;grid-template-columns:320px 1fr;height:calc(100vh - 64px)}
+aside{border-right:1px solid var(--line);background:var(--panel);display:flex;flex-direction:column;min-height:0}
+.side-head{padding:12px;border-bottom:1px solid var(--line)}
+.side-head h2{margin:0 0 8px;font-size:14px;color:var(--muted);font-weight:600}
+.search{width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);font:inherit}
+.units{overflow-y:auto;flex:1;padding:6px}
+.unit-link{display:flex;gap:10px;align-items:flex-start;width:100%;text-align:left;border:0;background:none;color:var(--ink);padding:7px 8px;border-radius:8px}
+.unit-link:hover{background:var(--bg)}
+.unit-link.active{background:var(--accent-soft)}
+.unit-link .num{flex:none;min-width:34px;text-align:center;font-weight:700;font-size:12.5px;color:var(--bk);background:color-mix(in srgb,var(--bk) 12%,transparent);border-radius:6px;padding:2px 4px;font-variant-numeric:tabular-nums}
+.unit-link .ut{font-size:13.5px;line-height:1.35}
+.unit-link .prog{margin-left:auto;flex:none;font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums;padding-top:2px}
+.unit-link .prog.full{color:var(--ok);font-weight:700}
+main{overflow-y:auto;min-width:0}
+.content{max-width:980px;margin:0 auto;padding:20px 24px 80px}
+.crumb{color:var(--muted);font-size:13px}
+h1{font-size:26px;line-height:1.25;margin:4px 0 14px}
+.tabs{display:flex;gap:6px;border-bottom:1px solid var(--line);margin-bottom:18px;position:sticky;top:0;background:var(--bg);z-index:5;padding-top:6px}
+.tab{border:0;background:none;color:var(--muted);padding:9px 14px;border-bottom:2px solid transparent;font-weight:600}
+.tab.active{color:var(--ink);border-bottom-color:var(--bk)}
+.pager{display:flex;justify-content:space-between;gap:8px;margin:24px 0}
+.pager button{border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:8px;padding:8px 12px;max-width:48%;text-align:left}
+.theory{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 22px}
+.theory p{margin:0 0 6px}
+.theory .sec{display:flex;align-items:center;gap:10px;margin:18px 0 8px;font-weight:700;font-size:16.5px}
+.theory .sec:first-child{margin-top:0}
+.theory .sec .L{width:28px;height:28px;border-radius:7px;background:var(--bk);color:#fff;display:grid;place-items:center;font-size:14px;flex:none}
+.theory .ex{color:color-mix(in srgb,var(--ink) 80%,var(--bk));}
+.theory .bul{padding-left:14px;text-indent:-12px}
+.note{border-radius:10px;padding:10px 14px;font-size:13.5px;margin:0 0 14px;background:var(--warn-soft);color:var(--ink);border:1px solid color-mix(in srgb,var(--warn) 30%,transparent)}
+.excard{background:var(--panel);border:1px solid var(--line);border-radius:12px;margin:0 0 18px;overflow:hidden}
+.exhead{display:flex;align-items:center;gap:10px;padding:10px 16px;border-bottom:1px solid var(--line);background:color-mix(in srgb,var(--bk) 6%,var(--panel))}
+.exhead .id{font-weight:800;color:var(--bk);font-variant-numeric:tabular-nums}
+.exhead .score{margin-left:auto;font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.exhead .score.good{color:var(--ok);font-weight:700}
+.exbody{padding:14px 16px}
+.exline{margin:2px 0;white-space:pre-wrap;word-break:break-word}
+.exline.instr{font-weight:600;margin-bottom:6px}
+.exline.item{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 10px;padding:4px 0}
+.exline.item .txt{flex:1 1 380px}
+.gap{display:inline-block;min-width:44px;border-bottom:1.5px solid var(--muted);color:transparent;user-select:none;line-height:1;transform:translateY(-3px)}
+.ans-wrap{display:flex;align-items:center;gap:6px;flex:0 1 330px;min-width:220px}
+.ans-wrap .lbl{font-size:12px;color:var(--muted);min-width:22px;text-align:right;font-variant-numeric:tabular-nums}
+.ans{flex:1;min-width:0;padding:6px 9px;border:1px solid var(--line);border-radius:7px;background:var(--bg);color:var(--ink);font:inherit;font-size:14.5px}
+.ans:focus{outline:2px solid var(--accent);outline-offset:0;border-color:transparent}
+.ans.ok{border-color:var(--ok);background:var(--ok-soft)}
+.ans.bad{border-color:var(--bad);background:var(--bad-soft)}
+.ans.ref{border-color:var(--warn);background:var(--warn-soft)}
+.mark{width:18px;text-align:center;font-weight:800}
+.mark.ok{color:var(--ok)} .mark.bad{color:var(--bad)} .mark.ref{color:var(--warn)}
+.sol{flex-basis:100%;font-size:13.5px;color:var(--ok);padding-left:2px}
+.sol b{color:var(--muted);font-weight:600}
+.extra{margin-top:12px;border-top:1px dashed var(--line);padding-top:10px}
+.extra h4{margin:0 0 6px;font-size:13px;color:var(--muted);font-weight:600}
+.extra .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:8px 14px}
+.extra .grid .cell{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.extra .grid .cell .sol{padding-left:28px}
+.actions{display:flex;flex-wrap:wrap;gap:8px;padding:12px 16px;border-top:1px solid var(--line)}
+.btn{border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:8px;padding:7px 13px;font-weight:600;font-size:13.5px}
+.btn.primary{background:var(--bk);border-color:var(--bk);color:#fff}
+.btn:hover{filter:brightness(.97)}
+.keybox{margin:0 16px 14px;padding:10px 14px;border-radius:10px;background:var(--ok-soft);border:1px solid color-mix(in srgb,var(--ok) 30%,transparent);white-space:pre-wrap;font-size:14px}
+.keybox .kt{font-weight:700;color:var(--ok);display:block;margin-bottom:4px;font-size:12.5px;text-transform:uppercase;letter-spacing:.4px}
+textarea.free{width:100%;min-height:80px;margin-top:10px;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);font:inherit}
+.tag{font-size:11.5px;border-radius:999px;padding:2px 8px;background:var(--warn-soft);color:var(--warn);border:1px solid color-mix(in srgb,var(--warn) 35%,transparent)}
+.hint{font-size:12.5px;color:var(--muted)}
+.imgs,.keyall{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 14px;margin:0 0 16px}
+.imgs summary,.keyall summary{cursor:pointer;font-weight:600;font-size:14px}
+.imgrow{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px}
+.imgrow img{max-width:100%;max-height:320px;border-radius:8px;border:1px solid var(--line);background:#fff}
+.dataBtn{border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:8px;padding:6px 10px;white-space:nowrap}
+.empty{padding:60px 20px;text-align:center;color:var(--muted)}
+.unit-sum{display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin:-4px 0 14px;color:var(--muted);font-size:13.5px}
+.bar{height:6px;border-radius:9px;background:var(--line);overflow:hidden;width:160px}
+.bar i{display:block;height:100%;background:var(--ok)}
+@media (max-width: 1500px){ .book .bt small{display:none} }
+@media (max-width: 1180px){ .book .bt{display:none} .book{padding:4px} }
+@media (max-width: 860px){
+  .menu-btn{display:block}
+  .layout{grid-template-columns:1fr}
+  aside{position:fixed;top:64px;left:0;bottom:0;width:86vw;max-width:340px;z-index:30;transform:translateX(-105%);transition:transform .2s;box-shadow:0 10px 30px rgba(0,0,0,.25)}
+  aside.open{transform:none}
+  .book .bt{display:none}
+  .book{padding:4px}
+  .brand{display:none}
+  .content{padding:14px 16px 80px}
+  h1{font-size:21px}
+  .ans-wrap{flex-basis:100%}
+}
+</style>
+</head>
+<body>
+<header>
+  <button class="menu-btn" id="menuBtn" aria-label="Danh sách unit">☰</button>
+  <div class="brand"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg><span>In Use Practice</span></div>
+  <nav class="books" id="books"></nav>
+  <button class="dataBtn" id="dataBtn" title="Nạp/cập nhật dữ liệu sách">Nạp dữ liệu</button>
+  <button class="theme-btn" id="themeBtn" title="Đổi giao diện sáng/tối">Sáng/Tối</button>
+</header>
+<div class="layout">
+  <aside id="side">
+    <div class="side-head">
+      <h2 id="sideTitle">Units</h2>
+      <input class="search" id="search" placeholder="Tìm unit (số hoặc tên)…">
+    </div>
+    <div class="units" id="units"></div>
+  </aside>
+  <main id="main"><div class="content" id="content"><div class="empty">Đang tải…</div></div></main>
+</div>
+<script>window.PUBLIC_BUILD=true;</script>
+<script>
+(function(){
+const BOOKMETA=[
+  {id:'vu',short:'Vocab Upper-Int',sub:'Vocabulary in Use · 4th ed',color:'var(--c-vu)',ico:'VU'},
+  {id:'va',short:'Vocab Advanced',sub:'Vocabulary in Use · 3rd ed',color:'var(--c-va)',ico:'VA'},
+  {id:'gi',short:'Grammar Intermediate',sub:'Grammar in Use · 5th ed',color:'var(--c-gi)',ico:'GI'},
+  {id:'ga',short:'Grammar Advanced',sub:'Advanced Grammar in Use · 3rd ed',color:'var(--c-ga)',ico:'GA'},
+  {id:'ci',short:'Collocations Int',sub:'Collocations in Use · 2nd ed',color:'var(--c-ci)',ico:'CI'}
+];
+const $=s=>document.querySelector(s);
+const store={
+  get(k,d){try{const v=localStorage.getItem('inuse:'+k);return v==null?d:JSON.parse(v)}catch(e){return d}},
+  set(k,v){try{localStorage.setItem('inuse:'+k,JSON.stringify(v))}catch(e){}}
+};
+let state=store.get('state',{book:'vu',unit:{},tab:{}});
+let BOOK=null, UNIT=null;
+
+function esc(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+
+/* ---------- theme ---------- */
+(function(){const t=store.get('theme',null);if(t)document.documentElement.dataset.theme=t;
+$('#themeBtn').onclick=()=>{const cur=document.documentElement.dataset.theme||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');const n=cur==='dark'?'light':'dark';document.documentElement.dataset.theme=n;store.set('theme',n)}})();
+
+/* ---------- answer checking ---------- */
+function normalize(s){
+  return String(s).normalize('NFKC').toLowerCase()
+   .replace(/[’‘`´]/g,"'").replace(/[“”"]/g,'')
+   .replace(/✓|✔/g,' tick ').replace(/✗|✘/g,' cross ')
+   .replace(/\.\.\.|…/g,' ')
+   .replace(/[.,;:!?()\[\]\-–—_\/'·•]/g,' ')
+   .replace(/\s+/g,'');
+}
+const TICK=new Set(['tick','ok','v','yes','correct','right','true','đúng','dung','y','c']);
+const CROSS=new Set(['cross','x','no','wrong','false','incorrect','sai','n']);
+function variants(ans){
+  let a=String(ans).normalize('NFKC');
+  const out=new Set();
+  // quoted alternatives inside parentheses, e.g. (‘attracts’ is also possible)
+  a.replace(/\(([^)]*)\)/g,(m,inner)=>{
+    if(/possible|also|likely|or |acceptable|correct/i.test(inner)){
+      inner.replace(/[‘'“"]([^’'”"]+)[’'”"]/g,(mm,q)=>{out.add(q);return mm});
+      const orm=inner.match(/^(?:or|also)\s+(.+)$/i); if(orm) out.add(orm[1]);
+    }
+    return m;
+  });
+  // drop explanatory parentheses (long ones / notes)
+  let base=a.replace(/\(([^)]*)\)/g,(m,inner)=>/possible|likely|also|not |or |more|e\.g\.|=|formal|informal|context|meaning|means|less|see /i.test(inner)||inner.split(' ').length>3?'':m).trim();
+  // also strip trailing notes after ' – ' or ' - '
+  const parts=[base, base.replace(/\s[–-]\s.*$/,'')];
+  const alts=[];
+  for(const p of parts){
+    for(const piece of p.split(/\s+\/\s+|\s*;\s*|\s+or\s+(?=\S)/)){ alts.push(piece) }
+    alts.push(p);
+  }
+  for(let alt of alts){
+    alt=alt.trim(); if(!alt) continue;
+    out.add(alt);
+    // contraction with expansion: ’m (am) measuring
+    out.add(alt.replace(/[’']\s?\w+\s*\((\w+)\)/g,'$1').replace(/^(\w+)[’']\w+\s*\((\w+ ?\w*)\)/,'$1 $2'));
+    out.add(alt.replace(/\s*\([^)]*\)\s*/g,' '));       // without optional words
+    out.add(alt.replace(/[()]/g,''));                  // with optional words
+  }
+  // whole answer with slashes collapsed
+  out.add(a);
+  return [...out].map(normalize).filter(Boolean);
+}
+function judge(user,key){
+  const u=normalize(user); const k=normalize(key);
+  if(!k && /[—–-]/.test(key)){ const raw=String(user).trim().toLowerCase(); if(['-','—','–','0','x','none','zero','no','no article','ø','∅'].includes(raw)) return true; if(!raw) return null; return false }
+  if(!u) return null;
+  if(/^(tick|ok)$/.test(k)||k.startsWith('tick')&&k.length<8){ if(TICK.has(u)||u==='tick') return true }
+  if(/^cross/.test(k)&&k.length<8){ if(CROSS.has(u)) return true }
+  const vs=variants(key);
+  if(vs.includes(u)) return true;
+  // allow the user to omit the leading word that is printed before the gap? (no) – but accept key prefix-free contractions
+  return false;
+}
+
+/* ---------- book loading ---------- */
+/* IndexedDB store for imported book data (public build) */
+function idb(){return new Promise((res,rej)=>{const r=indexedDB.open('inuse-books',1);r.onupgradeneeded=()=>r.result.createObjectStore('books');r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)})}
+async function idbGet(id){try{const db=await idb();return await new Promise(r=>{const q=db.transaction('books').objectStore('books').get(id);q.onsuccess=()=>r(q.result||null);q.onerror=()=>r(null)})}catch(e){return null}}
+async function idbPut(id,v){const db=await idb();return new Promise((res,rej)=>{const tx=db.transaction('books','readwrite');tx.objectStore('books').put(v,id);tx.oncomplete=res;tx.onerror=()=>rej(tx.error)})}
+async function loadBook(id){
+  window.BOOKS=window.BOOKS||{};
+  if(window.BOOKS[id]) return window.BOOKS[id];
+  const fromDb=await idbGet(id);
+  if(fromDb){window.BOOKS[id]=fromDb;return fromDb}
+  if(!window.PUBLIC_BUILD){
+    try{await new Promise((res,rej)=>{const s=document.createElement('script');s.src='data/'+id+'.js';s.onload=res;s.onerror=rej;document.head.appendChild(s)}); if(window.BOOKS[id]) return window.BOOKS[id]}catch(e){}
+  }
+  return null;
+}
+async function importFiles(files){
+  let n=0;
+  for(const f of files){
+    let txt=await f.text(), data;
+    try{
+      if(/^\s*window\.BOOKS/.test(txt)){ const i=txt.indexOf(']=')+2; data=JSON.parse(txt.slice(i).replace(/;\s*$/,'')); data={books:{[data.id]:data}} }
+      else data=JSON.parse(txt);
+    }catch(e){ alert('File '+f.name+' không đúng định dạng dữ liệu sách.'); continue }
+    const books=data.books||(data.id&&data.units?{[data.id]:data}:{});
+    for(const id in books){ await idbPut(id,books[id]); window.BOOKS=window.BOOKS||{}; window.BOOKS[id]=books[id]; n++ }
+  }
+  return n;
+}
+function importScreen(){
+  $('#content').innerHTML=`<div class="theory" style="max-width:640px;margin:40px auto">
+   <div class="sec"><span class="L">↥</span>Nạp dữ liệu sách</div>
+   <p>Trang web này chỉ chứa phần app. Nội dung sách nằm trong file dữ liệu riêng trên máy bạn (<b>inuse-data.json</b>).</p>
+   <p>Chọn file đó một lần. Dữ liệu được lưu trong trình duyệt này, những lần sau mở lại là dùng được ngay.</p>
+   <p><input type="file" id="imp" accept=".json,.js" multiple></p><p class="hint" id="impMsg"></p></div>`;
+  $('#imp').onchange=async e=>{ $('#impMsg').textContent='Đang nạp…'; const n=await importFiles(e.target.files); $('#impMsg').textContent='Đã nạp '+n+' cuốn.'; if(n) selectBook(state.book) };
+}
+
+function renderBooks(){
+  $('#books').innerHTML=BOOKMETA.map(b=>`<button class="book ${b.id===state.book?'active':''}" data-b="${b.id}" style="--bk:${b.color}">
+     <span class="ico" style="background:${b.color}">${b.ico}</span>
+     <span class="bt"><b>${esc(b.short)}</b><small>${esc(b.sub)}</small></span></button>`).join('');
+  $('#books').querySelectorAll('.book').forEach(el=>el.onclick=()=>selectBook(el.dataset.b));
+}
+function meta(){return BOOKMETA.find(b=>b.id===state.book)}
+
+async function selectBook(id){
+  state.book=id; store.set('state',state); renderBooks();
+  document.documentElement.style.setProperty('--bk',meta().color);
+  $('#content').innerHTML='<div class="empty">Đang tải sách…</div>';
+  BOOK=await loadBook(id);
+  if(!BOOK){ $('#units').innerHTML=''; $('#sideTitle').textContent=meta().short; importScreen(); return }
+  $('#sideTitle').textContent=meta().short+' · '+BOOK.units.length+' units';
+  $('#search').value='';
+  renderUnits();
+  selectUnit(state.unit[id]||1);
+}
+
+function unitList(){
+  const l=BOOK.units.map(u=>({key:u.n,n:u.n,title:u.title,u}));
+  if(BOOK.additional) l.push({key:'add',n:'+',title:'Additional exercises (bài tập bổ sung)',u:BOOK.additional});
+  return l;
+}
+function progressOf(key){
+  const p=store.get('p:'+state.book+':'+key,null); return p;
+}
+function renderUnits(){
+  const q=$('#search').value.trim().toLowerCase();
+  const items=unitList().filter(x=>!q||String(x.n)===q||x.title.toLowerCase().includes(q)||String(x.n).startsWith(q));
+  $('#units').innerHTML=items.map(x=>{
+    const p=progressOf(x.key); let ps='';
+    if(p&&p.total){ps=`<span class="prog ${p.ok>=p.total?'full':''}">${p.ok}/${p.total}</span>`}
+    return `<button class="unit-link ${String(x.key)===String(state.unit[state.book]||1)?'active':''}" data-k="${x.key}"><span class="num">${x.n}</span><span class="ut">${esc(x.title)}</span>${ps}</button>`}).join('')||'<div class="empty">Không tìm thấy</div>';
+  $('#units').querySelectorAll('.unit-link').forEach(el=>el.onclick=()=>{selectUnit(el.dataset.k==='add'?'add':+el.dataset.k);$('#side').classList.remove('open')});
+}
+$('#search').oninput=renderUnits;
+$('#menuBtn').onclick=()=>$('#side').classList.toggle('open');
+
+function selectUnit(k){
+  const list=unitList();
+  let item=list.find(x=>String(x.key)===String(k))||list[0];
+  state.unit[state.book]=item.key; store.set('state',state);
+  UNIT=item;
+  renderUnits();
+  const act=$('#units .unit-link.active'); if(act) act.scrollIntoView({block:'nearest'});
+  renderUnit();
+}
+
+/* ---------- theory ---------- */
+function renderTheory(text){
+  const lines=text.split('\n');
+  let html='';
+  for(let i=0;i<lines.length;i++){
+    const l=lines[i].trim(); if(!l) continue;
+    let m;
+    if(/^[A-H]$/.test(l)){
+      // letter heading; next line may be the section title
+      const nxt=(lines[i+1]||'').trim();
+      if(nxt && nxt.length<70 && !/^[A-H]$/.test(nxt) && !/[.:]$/.test(nxt) && /^[A-Za-z‘'(]/.test(nxt) && nxt.split(' ').length<10){ html+=`<div class="sec"><span class="L">${l}</span>${esc(nxt)}</div>`; i++; }
+      else html+=`<div class="sec"><span class="L">${l}</span></div>`;
+      continue;
+    }
+    if((m=l.match(/^([A-H])\s+([A-Z‘'(].{2,80})$/)) && !/[.,;]$/.test(l) && l.split(' ').length<=12 && !/^(A|I)\s+(am|was|have|think|don|can|will|wish|would|’m|'m)\b/.test(l)){
+      html+=`<div class="sec"><span class="L">${m[1]}</span>${esc(m[2])}</div>`; continue;
+    }
+    if(/^[•–\-]\s?/.test(l)){ html+=`<p class="bul">${esc(l)}</p>`; continue }
+    if(/^[a-z(]/.test(l) && html.endsWith('</p>') && !/[.:;?!)]<\/p>$/.test(html)){ html=html.slice(0,-4)+' '+esc(l)+'</p>'; continue }
+    html+=`<p>${esc(l)}</p>`;
+  }
+  return html||'<p class="hint">(Không có nội dung lý thuyết)</p>';
+}
+
+/* ---------- exercises ---------- */
+function exKey(ex){return 'a:'+state.book+':'+UNIT.key+':'+ex.id}
+function lineHTML(l){
+  return esc(l).replace(/_{3,}/g,'<span class="gap">_____</span>');
+}
+function renderExercise(ex, idx){
+  const items=(ex.ans.items||[]).filter(it=>String(it.a).trim());
+  const byK=new Map(items.map(it=>[it.k,it]));
+  const saved=store.get(exKey(ex),{});
+  const placed=new Set();
+  const lines=(ex.text||'').split('\n');
+  let body='';
+  let curN=null, firstItemSeen=false;
+  lines.forEach((l,i)=>{
+    const t=l.trim(); if(!t) return;
+    let m, k=null;
+    if((m=t.match(/^(\d{1,2})\s+([a-f])\s+/))){ curN=m[1]; k=m[1]+m[2]; if(!byK.has(k)&&byK.has(m[1])) k=m[1]; }
+    else if((m=t.match(/^(\d{1,2})(\s|$)/))){ curN=m[1]; k=m[1]; }
+    else if(curN && (m=t.match(/^([b-f])\s+/))){ k=curN+m[1]; }
+    if(k) firstItemSeen=true;
+    if(k && byK.has(k) && !placed.has(k)){
+      placed.add(k);
+      body+=`<div class="exline item"><span class="txt">${lineHTML(t)}</span>${inputHTML(ex,byK.get(k),saved)}</div>`;
+    }else{
+      body+=`<div class="exline ${!firstItemSeen&&i===0&&!k?'instr':''}">${lineHTML(t)}</div>`;
+    }
+  });
+  if(!ex.text){
+    body+=`<div class="note">Đề bài của bài ${esc(ex.id)} không tách riêng được từ file gốc (thường nằm chung với bài liền trước hoặc là hình/bảng). Bạn vẫn có thể nhập đáp án theo số câu bên dưới.</div>`;
+  }
+  const rest=items.filter(it=>!placed.has(it.k));
+  if(rest.length){
+    body+=`<div class="extra"><h4>${placed.size?'Các câu khác':'Nhập đáp án theo số câu'}</h4><div class="grid">${rest.map(it=>`<div class="cell">${inputHTML(ex,it,saved,true)}</div>`).join('')}</div></div>`;
+  }
+  const hasItems=items.length>0;
+  if(!hasItems){
+    body+=`<textarea class="free" data-free="1" placeholder="Viết câu trả lời của bạn ở đây, rồi bấm “Xem đáp án” để tự so sánh…">${esc(saved.__free||'')}</textarea>`;
+  }
+  const open=ex.ans.open;
+  return `<section class="excard" data-ex="${idx}">
+    <div class="exhead"><span class="id">${esc(ex.id)}</span>${open&&ex.key?'<span class="tag">Đáp án gợi ý</span>':''}${!ex.key?(UNIT.u.keyAll?'<span class="tag">Xem đáp án cả unit ở trên</span>':'<span class="tag">Không có đáp án trong sách</span>'):''}<span class="score"></span></div>
+    <div class="exbody">${body}</div>
+    <div class="keybox" hidden><span class="kt">Đáp án (Answer key)</span>${esc(ex.key||'Sách không có đáp án cho bài này (bài tự luận / Over to you).')}</div>
+    <div class="actions">
+      ${hasItems?'<button class="btn primary" data-act="check">Kiểm tra</button>':''}
+      <button class="btn" data-act="key">Xem đáp án</button>
+      ${hasItems?'<button class="btn" data-act="reveal">Điền đáp án</button>':''}
+      <button class="btn" data-act="reset">Làm lại</button>
+    </div>
+  </section>`;
+}
+function inputHTML(ex,it,saved,withLabel){
+  const v=saved[it.k]||'';
+  return `<span class="ans-wrap"><span class="lbl">${esc(it.k)}</span><input class="ans" data-k="${esc(it.k)}" value="${esc(v)}" autocomplete="off" spellcheck="false" placeholder="câu ${esc(it.k)}"><span class="mark"></span></span><span class="sol" data-sol="${esc(it.k)}" hidden></span>`;
+}
+
+function renderUnit(){
+  const u=UNIT.u, isAdd=UNIT.key==='add';
+  const tab=(state.tab[state.book+':'+UNIT.key])||(isAdd?'ex':'theory');
+  const nEx=u.exercises.length;
+  const list=unitList(); const pos=list.findIndex(x=>x.key===UNIT.key);
+  const prev=list[pos-1], next=list[pos+1];
+  let html=`<div class="crumb">${esc(BOOK.title)}</div>
+   <h1>${isAdd?'':'Unit '+u.n+' · '}${esc(u.title)}</h1>
+   <div class="unit-sum" id="unitSum"></div>
+   <div class="tabs">${!isAdd?`<button class="tab ${tab==='theory'?'active':''}" data-t="theory">Lý thuyết</button>`:''}<button class="tab ${tab==='ex'?'active':''}" data-t="ex">Bài tập (${nEx})</button></div>`;
+  const imgs=(u.images||[]).filter(i=>i.kind===(tab==='theory'?'theory':'ex'));
+  const imgHtml=imgs.length?`<details class="imgs" open><summary>Hình minh hoạ trong sách (${imgs.length})</summary><div class="imgrow">${imgs.map(i=>`<img src="${i.src}" alt="hình minh hoạ" loading="lazy">`).join('')}</div></details>`:'';
+  if(tab==='theory' && !isAdd){
+    html+=imgHtml+`<div class="theory">${renderTheory(u.theory||'')}</div>`;
+    html+=`<p class="hint">Hình minh hoạ và bảng trong sách gốc không chuyển được sang chữ nên có thể thiếu hoặc bị xếp lộn dòng.</p>`;
+  }else{
+    html+=imgHtml;
+    if(u.keyAll) html+=`<details class="keyall"><summary>Đáp án cả unit (sách gốc không tách được theo từng bài)</summary><div class="keybox" style="margin:10px 0 0">${esc(u.keyAll)}</div></details>`;
+    if(u.exHeader) html+=`<div class="exline hint" style="margin-bottom:12px;white-space:pre-wrap">${lineHTML(u.exHeader)}</div>`;
+    html+=u.exercises.map((ex,i)=>renderExercise(ex,i)).join('');
+  }
+  html+=`<div class="pager">${prev?`<button data-go="${prev.key}">← ${prev.key==='add'?'':'Unit '+prev.n+': '}${esc(prev.title)}</button>`:'<span></span>'}${next?`<button data-go="${next.key}" style="text-align:right">${next.key==='add'?'':'Unit '+next.n+': '}${esc(next.title)} →</button>`:''}</div>`;
+  $('#content').innerHTML=html;
+  $('#main').scrollTop=0;
+  $('#content').querySelectorAll('.tab').forEach(b=>b.onclick=()=>{state.tab[state.book+':'+UNIT.key]=b.dataset.t;store.set('state',state);renderUnit()});
+  $('#content').querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>selectUnit(b.dataset.go==='add'?'add':+b.dataset.go));
+  $('#content').querySelectorAll('.excard').forEach(card=>wireCard(card,u.exercises[+card.dataset.ex]));
+  updateUnitSummary();
+}
+
+function wireCard(card,ex){
+  const save=()=>{const o={};card.querySelectorAll('.ans').forEach(i=>{if(i.value)o[i.dataset.k]=i.value});const f=card.querySelector('[data-free]');if(f&&f.value)o.__free=f.value;store.set(exKey(ex),o)};
+  card.addEventListener('input',e=>{ if(e.target.matches('.ans')){e.target.classList.remove('ok','bad','ref');e.target.parentElement.querySelector('.mark').textContent='';} save() });
+  card.addEventListener('keydown',e=>{ if(e.key==='Enter'&&e.target.matches('.ans')){ e.preventDefault(); const all=[...card.querySelectorAll('.ans')]; const i=all.indexOf(e.target); if(i<all.length-1) all[i+1].focus(); else check(card,ex,true) } });
+  card.querySelectorAll('[data-act]').forEach(b=>b.onclick=()=>{
+    const a=b.dataset.act;
+    if(a==='check') check(card,ex,true);
+    if(a==='key'){ const k=card.querySelector('.keybox'); k.hidden=!k.hidden; b.textContent=k.hidden?'Xem đáp án':'Ẩn đáp án' }
+    if(a==='reveal'){ card.querySelectorAll('.ans').forEach(i=>{ const it=ex.ans.items.find(x=>x.k===i.dataset.k); if(it){ const sol=card.querySelector(`[data-sol="${CSS.escape(it.k)}"]`); sol.hidden=false; sol.innerHTML='<b>Đáp án:</b> '+esc(it.a);} }) }
+    if(a==='reset'){ store.set(exKey(ex),{}); card.querySelectorAll('.ans').forEach(i=>{i.value='';i.classList.remove('ok','bad','ref');i.parentElement.querySelector('.mark').textContent=''}); card.querySelectorAll('.sol').forEach(s=>s.hidden=true); const f=card.querySelector('[data-free]'); if(f) f.value=''; card.querySelector('.score').textContent=''; recordScore(ex,0,0,true) }
+  });
+  // restore marks if previously checked
+  const sc=store.get('s:'+exKey(ex),null);
+  if(sc && sc.checked) check(card,ex,false);
+}
+function check(card,ex,showSol){
+  let ok=0,total=0;
+  const open=ex.ans.open;
+  card.querySelectorAll('.ans').forEach(i=>{
+    const it=ex.ans.items.find(x=>x.k===i.dataset.k); if(!it) return;
+    total++;
+    const r=judge(i.value,it.a);
+    const mk=i.parentElement.querySelector('.mark');
+    const sol=card.querySelector(`[data-sol="${CSS.escape(it.k)}"]`);
+    i.classList.remove('ok','bad','ref');
+    if(r===true){ ok++; i.classList.add('ok'); mk.className='mark ok'; mk.textContent='✓'; if(sol) sol.hidden=true }
+    else if(r===null){ mk.textContent=''; mk.className='mark'; }
+    else{
+      i.classList.add(open?'ref':'bad'); mk.className='mark '+(open?'ref':'bad'); mk.textContent=open?'≈':'✗';
+      if(sol&&showSol!==false){ sol.hidden=false; sol.innerHTML=(open?'<b>Gợi ý:</b> ':'<b>Đáp án:</b> ')+esc(it.a) }
+    }
+  });
+  const s=card.querySelector('.score');
+  s.textContent=total?`${ok}/${total} đúng`:''; s.classList.toggle('good',total&&ok===total);
+  recordScore(ex,ok,total,false);
+}
+function recordScore(ex,ok,total,reset){
+  store.set('s:'+exKey(ex),reset?null:{checked:true,ok,total});
+  // unit progress
+  let O=0,T=0;
+  for(const e of UNIT.u.exercises){ const n=(e.ans.items||[]).length; if(!n) continue; T+=n; const s=store.get('s:a:'+state.book+':'+UNIT.key+':'+e.id,null); if(s&&s.checked) O+=s.ok }
+  store.set('p:'+state.book+':'+UNIT.key,{ok:O,total:T});
+  updateUnitSummary();
+  const el=$(`#units .unit-link[data-k="${UNIT.key}"] .prog`);
+  if(el){el.textContent=`${O}/${T}`;el.classList.toggle('full',O>=T)} else renderUnits();
+}
+function updateUnitSummary(){
+  const p=progressOf(UNIT.key); const el=$('#unitSum'); if(!el) return;
+  const T=UNIT.u.exercises.reduce((a,e)=>a+(e.ans.items||[]).length,0);
+  const O=p?p.ok:0;
+  el.innerHTML=`<span>${UNIT.u.exercises.length} bài tập · ${T} câu có đáp án</span>${T?`<span class="bar"><i style="width:${Math.round(100*O/T)}%"></i></span><span>${O}/${T} đúng</span>`:''}`;
+}
+
+$('#dataBtn').onclick=()=>importScreen();
+renderBooks();
+selectBook(state.book);
+})();
+</script>
+</body>
+</html>
