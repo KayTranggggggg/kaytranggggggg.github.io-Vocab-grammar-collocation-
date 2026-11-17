@@ -58,7 +58,7 @@ main{overflow-y:auto;min-width:0}
 .content{max-width:980px;margin:0 auto;padding:20px 24px 80px}
 .crumb{color:var(--muted);font-size:13px}
 h1{font-size:26px;line-height:1.25;margin:4px 0 14px}
-.tabs{display:flex;gap:6px;border-bottom:1px solid var(--line);margin-bottom:18px;position:sticky;top:0;background:var(--bg);z-index:5;padding-top:6px}
+.tabs{display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--line);margin-bottom:18px;position:sticky;top:0;background:var(--bg);z-index:5;padding-top:6px}
 .tab{border:0;background:none;color:var(--muted);padding:9px 14px;border-bottom:2px solid transparent;font-weight:600}
 .tab.active{color:var(--ink);border-bottom-color:var(--bk)}
 .pager{display:flex;justify-content:space-between;gap:8px;margin:24px 0}
@@ -115,6 +115,40 @@ textarea.free{width:100%;min-height:80px;margin-top:10px;padding:8px 10px;border
 .theory b{font-weight:700;color:color-mix(in srgb,var(--ink) 85%,var(--bk))}
 .theory .sub{font-weight:700;margin:14px 0 6px;color:var(--bk)}
 .theory p.gl{font-size:13.5px;color:var(--muted);margin:0 0 2px}
+.theory .figrow{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;align-items:flex-end;margin:10px 0 14px}
+.theory .figrow img{border-radius:8px;background:#fff;cursor:zoom-in}
+.theory .figrow img.zoom{position:fixed;inset:0;margin:auto;width:auto!important;max-width:96vw;max-height:94vh;z-index:90;cursor:zoom-out;box-shadow:0 0 0 100vmax rgba(0,0,0,.7)}
+.theory .fig{margin:10px 0 14px;text-align:center}
+.theory .fig img{max-width:100%;border-radius:8px;background:#fff;box-shadow:0 2px 10px rgba(0,0,0,.08);cursor:zoom-in}
+.theory .fig img.zoom{position:fixed;inset:0;margin:auto;width:auto!important;max-width:96vw;max-height:94vh;z-index:90;cursor:zoom-out;box-shadow:0 0 0 100vmax rgba(0,0,0,.7)}
+.btn.ai{margin-left:auto}
+.aibox{margin:10px 0 0;padding:12px 14px;border-radius:10px;background:color-mix(in srgb,var(--bk) 8%,var(--panel));border:1px solid color-mix(in srgb,var(--bk) 30%,transparent);font-size:14.5px;line-height:1.55;white-space:pre-wrap}
+.aibox .r{margin:4px 0}.aibox .r b{color:var(--bk)}
+.aic{font-size:13px;color:var(--muted);margin-top:3px}
+#aiDlg{position:fixed;inset:0;z-index:120;background:rgba(0,0,0,.45);display:none;place-items:center;padding:16px}
+#aiDlg.on{display:grid}
+#aiDlg .box{background:var(--panel);color:var(--ink);border-radius:14px;max-width:520px;width:100%;padding:20px 22px;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+#aiDlg h3{margin:0 0 8px}#aiDlg label{display:block;font-size:13px;color:var(--muted);margin:12px 0 4px}
+#aiDlg input[type=password],#aiDlg input[type=text]{width:100%;box-sizing:border-box;padding:9px 11px;border:1px solid var(--line);border-radius:9px;background:var(--bg);color:var(--ink);font:inherit}
+#aiDlg .row{display:flex;gap:8px;margin-top:16px;flex-wrap:wrap}
+#aiDlg .st{font-size:13px;margin-top:8px}
+.tab,.pgbtn,.lecbtn{white-space:nowrap}
+.pgbtn{margin-left:auto;padding:7px 12px;border-radius:999px;font-size:14px}
+#pgPane{position:fixed;top:0;right:0;bottom:0;width:min(46vw,760px);background:var(--panel);border-left:1px solid var(--line);z-index:40;display:none;flex-direction:column;box-shadow:-8px 0 30px rgba(0,0,0,.12)}
+#pgPane.on{display:flex}
+#pgPane .ph{display:flex;align-items:center;gap:8px;padding:10px 14px;border-bottom:1px solid var(--line);font-weight:600}
+#pgPane .ph button{margin-left:auto}
+#pgPane .pb{overflow:auto;flex:1;padding:10px}
+#pgPane img{width:100%;border-radius:6px;background:#fff}
+body.pg-on .content{margin-right:min(46vw,760px)}
+@media (max-width:900px){#pgPane{width:100vw}body.pg-on .content{margin-right:auto}}
+.lecbtn{margin-left:6px;padding:7px 14px;border-radius:999px;font-size:14px}
+.theory .tw{overflow-x:auto;margin:8px 0 14px}
+.theory table{border-collapse:collapse;width:100%;font-size:14.5px}
+.theory td,.theory th{border:1px solid var(--line);padding:6px 10px;vertical-align:top;text-align:left;line-height:1.5}
+.theory th{background:color-mix(in srgb,var(--bk) 14%,transparent)}
+.theory tr td:first-child{background:color-mix(in srgb,var(--bk) 6%,transparent)}
+.theory table.cols td{border:0;background:none!important;padding:4px 12px 4px 0;width:50%}
 .theory sup{font-size:10px;color:var(--bk);font-weight:700}
 .lec-cta{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:0 0 14px}
 /* lecture overlay */
@@ -143,6 +177,10 @@ textarea.free{width:100%;min-height:80px;margin-top:10px;padding:8px 10px;border
 #lec .para.cur b{animation:glow 1.2s ease-in-out}
 @keyframes glow{0%{text-shadow:0 0 0 transparent}40%{text-shadow:0 0 18px #ffd166}100%{text-shadow:0 0 0 transparent}}
 #lec .para i{color:#9fd8ff}
+#lec .para table{border-collapse:collapse;width:100%}
+#lec .para td,#lec .para th{border:1px solid rgba(255,255,255,.22);padding:6px 10px;vertical-align:top;text-align:left}
+#lec .para th{background:rgba(255,255,255,.1)}
+#lec .para tr td:first-child{color:#ffd166;font-weight:600}
 #lec .pic{max-width:min(380px,34vw);display:flex;flex-direction:column;gap:12px}
 #lec .pic img{width:100%;border-radius:14px;background:#fff;box-shadow:0 14px 40px rgba(0,0,0,.4);animation:float 6s ease-in-out infinite}
 @keyframes float{50%{transform:translateY(-8px)}}
@@ -184,6 +222,7 @@ textarea.free{width:100%;min-height:80px;margin-top:10px;padding:8px 10px;border
   <div class="brand"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg><span>In Use Practice</span></div>
   <nav class="books" id="books"></nav>
   <button class="dataBtn" id="dataBtn" title="Nạp/cập nhật dữ liệu sách">Nạp dữ liệu</button>
+  <button class="theme-btn" id="aiBtn" title="Cài API key để AI chấm bài">🔑 AI chấm</button>
   <button class="theme-btn" id="themeBtn" title="Đổi giao diện sáng/tối">Sáng/Tối</button>
 </header>
 <div class="layout">
@@ -374,11 +413,21 @@ function md(s){
   return esc(s).replace(/\*\*(.+?)\*\*/g,'<b>$1</b>').replace(/(^|[\s(\[‘“])_(.+?)_(?=$|[\s.,;:!?)\]’”])/g,'$1<i>$2</i>').replace(/\^(\d{1,2})\^/g,'<sup>$1</sup>');
 }
 function plain(s){return String(s).replace(/\*\*|\^\d{1,2}\^/g,'').replace(/(^|\s)_(.+?)_/g,'$1$2')}
+function cellHTML(c){return String(c).split('\n').map(md).join('<br>')}
+function tableHTML(b){
+  const rows=b.rows||[]; let h=`<div class="tw"><table${b.plain?' class="cols"':''}>`;
+  rows.forEach((r,i)=>{ const th=b.head&&i===0; h+='<tr>'+r.map(c=>th?`<th>${cellHTML(c)}</th>`:`<td>${cellHTML(c)}</td>`).join('')+'</tr>' });
+  return h+'</table></div>';
+}
 function renderBlocks(bl){
   let h='';
-  for(const b of bl){
+  for(let i=0;i<bl.length;i++){ const b=bl[i];
+    if(b.t==='img'&&bl[i+1]&&bl[i+1].t==='img'){ let j=i; const g=[]; while(bl[j]&&bl[j].t==='img'){g.push(bl[j]);j++} const tot=g.reduce((s,x)=>s+(x.w||30),0);
+      h+=`<div class="figrow">${g.map(x=>`<img src="${x.src}" alt="hình minh hoạ" loading="lazy" style="width:${Math.max(12,Math.min(100,(x.w||30)*(tot>100?100/tot:1)))-1}%">`).join('')}</div>`; i=j-1; continue }
     if(b.t==='sec') h+=`<div class="sec"><span class="L">${esc(b.l)}</span>${md(b.h||'')}</div>`;
     else if(b.t==='h') h+=`<div class="sub">${md(b.s)}</div>`;
+    else if(b.t==='tbl') h+=tableHTML(b);
+    else if(b.t==='img') h+=`<figure class="fig"><img src="${b.src}" alt="hình minh hoạ" loading="lazy" style="width:${Math.max(18,b.w||50)}%"></figure>`;
     else if(b.t==='ref') h+=`<p class="hint">${md(b.s)}</p>`;
     else { const s=b.s; const cls=/^(•|–|-)\s?/.test(plain(s))?'bul':(/^\d{1,2}\s/.test(plain(s))&&plain(s).length<140?'gl':''); h+=`<p class="${cls}">${md(s)}</p>`; }
   }
@@ -449,12 +498,14 @@ function renderExercise(ex, idx){
   return `<section class="excard" data-ex="${idx}">
     <div class="exhead"><span class="id">${esc(ex.id)}</span>${open&&ex.key?'<span class="tag">Đáp án gợi ý</span>':''}${!ex.key?(UNIT.u.keyAll?'<span class="tag">Xem đáp án cả unit ở trên</span>':'<span class="tag">Không có đáp án trong sách</span>'):''}<span class="score"></span></div>
     <div class="exbody">${body}</div>
+    <div class="aibox" hidden></div>
     <div class="keybox" hidden><span class="kt">Đáp án (Answer key)</span>${esc(ex.key||'Sách không có đáp án cho bài này (bài tự luận / Over to you).')}</div>
     <div class="actions">
       ${hasItems?'<button class="btn primary" data-act="check">Kiểm tra</button>':''}
       <button class="btn" data-act="key">Xem đáp án</button>
       ${hasItems?'<button class="btn" data-act="reveal">Điền đáp án</button>':''}
       <button class="btn" data-act="reset">Làm lại</button>
+      <button class="btn ai" data-act="ai" title="Gửi bài làm cho AI (Gemini) chấm và nhận xét">🤖 AI chấm</button>
     </div>
   </section>`;
 }
@@ -472,14 +523,13 @@ function renderUnit(){
   let html=`<div class="crumb">${esc(BOOK.title)}</div>
    <h1>${isAdd?'':'Unit '+u.n+' · '}${esc(u.title)}</h1>
    <div class="unit-sum" id="unitSum"></div>
-   <div class="tabs">${!isAdd?`<button class="tab ${tab==='theory'?'active':''}" data-t="theory">Lý thuyết</button>`:''}<button class="tab ${tab==='ex'?'active':''}" data-t="ex">Bài tập (${nEx})</button></div>`;
+   <div class="tabs">${!isAdd?`<button class="tab ${tab==='theory'?'active':''}" data-t="theory">Lý thuyết</button>`:''}<button class="tab ${tab==='ex'?'active':''}" data-t="ex">Bài tập (${nEx})</button>${!isAdd?`<button class="btn pgbtn" id="pgBtn" title="Xem trang sách gốc bên cạnh">📄 Trang gốc</button><button class="btn primary lecbtn" id="lecBtn" title="Slide hoạt ảnh, giọng đọc tiếng Anh">▶ Bài giảng</button>`:''}</div>`;
   const imgs=(u.images||[]).filter(i=>i.kind===(tab==='theory'?'theory':'ex'));
   const isPage=imgs.length&&imgs[0].page;
   const imgHtml=imgs.length?`<details class="imgs" ${isPage?'':'open'}><summary>${isPage?'Xem trang sách gốc (có hình minh hoạ)':'Hình minh hoạ trong sách ('+imgs.length+')'}</summary><div class="imgrow">${imgs.map(i=>`<img src="${i.src}" alt="hình minh hoạ" loading="lazy" style="${i.page?'width:100%':''}">`).join('')}</div></details>`:'';
   if(tab==='theory' && !isAdd){
-    html+=`<div class="lec-cta"><button class="btn primary" id="lecBtn">▶ Xem bài giảng (giọng đọc tiếng Anh)</button><span class="hint">Slide hoạt ảnh, đọc to từng đoạn, kèm hình minh hoạ.</span></div>`;
-    html+=imgHtml+`<div class="theory">${u.theoryBlocks?renderBlocks(u.theoryBlocks):renderTheory(u.theory||'')}</div>`;
-    html+=`<p class="hint">Hình minh hoạ và bảng trong sách gốc không chuyển được sang chữ nên có thể thiếu hoặc bị xếp lộn dòng.</p>`;
+    html+=((u.theoryBlocks||[]).some(b=>b.t==='img')?'':imgHtml)+`<div class="theory">${u.theoryBlocks?renderBlocks(u.theoryBlocks):renderTheory(u.theory||'')}</div>`;
+    if(!u.theoryBlocks) html+=`<p class="hint">Unit này chưa có bản lý thuyết đã định dạng. Nếu bạn đang mở bản cũ, hãy đóng tab và mở lại file mới.</p>`;
   }else{
     html+=imgHtml;
     if(u.keyAll) html+=`<details class="keyall"><summary>Đáp án cả unit (sách gốc không tách được theo từng bài)</summary><div class="keybox" style="margin:10px 0 0">${esc(u.keyAll)}</div></details>`;
@@ -493,6 +543,9 @@ function renderUnit(){
   $('#content').querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>selectUnit(b.dataset.go==='add'?'add':+b.dataset.go));
   $('#content').querySelectorAll('.excard').forEach(card=>wireCard(card,u.exercises[+card.dataset.ex]));
   const lb=$('#lecBtn'); if(lb) lb.onclick=()=>Lecture.open(u);
+  const pb=$('#pgBtn'); if(pb) pb.onclick=()=>{ Pages.on=!Pages.on; store.set('pgOn',Pages.on); Pages.show(tab) };
+  Pages.show(tab);
+  $('#content').querySelectorAll('.fig img,.figrow img').forEach(i=>i.onclick=()=>i.classList.toggle('zoom'));
   updateUnitSummary();
 }
 
@@ -503,6 +556,7 @@ function wireCard(card,ex){
   card.querySelectorAll('[data-act]').forEach(b=>b.onclick=()=>{
     const a=b.dataset.act;
     if(a==='check') check(card,ex,true);
+    if(a==='ai'){ save(); AI.grade(card,ex); return }
     if(a==='key'){ const k=card.querySelector('.keybox'); k.hidden=!k.hidden; b.textContent=k.hidden?'Xem đáp án':'Ẩn đáp án' }
     if(a==='reveal'){ card.querySelectorAll('.ans').forEach(i=>{ const it=ex.ans.items.find(x=>x.k===i.dataset.k); if(it){ const sol=card.querySelector(`[data-sol="${CSS.escape(it.k)}"]`); sol.hidden=false; sol.innerHTML='<b>Đáp án:</b> '+esc(it.a);} }) }
     if(a==='reset'){ store.set(exKey(ex),{}); card.querySelectorAll('.ans').forEach(i=>{i.value='';i.classList.remove('ok','bad','ref');i.parentElement.querySelector('.mark').textContent=''}); card.querySelectorAll('.sol').forEach(s=>s.hidden=true); const f=card.querySelector('[data-free]'); if(f) f.value=''; card.querySelector('.score').textContent=''; recordScore(ex,0,0,true) }
@@ -550,6 +604,94 @@ function updateUnitSummary(){
 }
 
 $('#dataBtn').onclick=()=>importScreen();
+/* ---------- original page viewer ---------- */
+const Pages={on:store.get('pgOn',false),loaded:{},
+  pane(){ let d=$('#pgPane'); if(!d){ d=document.createElement('div'); d.id='pgPane'; d.innerHTML='<div class="ph"><span id="pgT"></span><button class="btn" id="pgX">✕ Đóng</button></div><div class="pb" id="pgB"></div>'; document.body.appendChild(d); $('#pgX').onclick=()=>{Pages.on=false;store.set('pgOn',false);Pages.show()} } return d },
+  load(key){ if(window.PAGES&&window.PAGES[key]) return Promise.resolve(true); if(window.PUBLIC_BUILD) return Promise.resolve(false);
+    if(!this.loaded[key]) this.loaded[key]=new Promise(res=>{ const s=document.createElement('script'); s.src='InUse-trang-goc/pages_'+key+'.js'; s.onload=()=>res(true); s.onerror=()=>res(false); document.head.appendChild(s) });
+    return this.loaded[key] },
+  async show(tab){
+    tab=tab||this.tab; this.tab=tab; const d=this.pane();
+    document.body.classList.toggle('pg-on',!!this.on); d.classList.toggle('on',!!this.on);
+    const pb=$('#pgBtn'); if(pb) pb.classList.toggle('primary',!!this.on);
+    if(!this.on||!UNIT||UNIT.key==='add') return;
+    const key=state.book+'_'+(tab==='ex'?'e':'t'); const n=String(UNIT.u.n);
+    $('#pgT').textContent=`Trang sách gốc · Unit ${n} · ${tab==='ex'?'Bài tập':'Lý thuyết'}`;
+    $('#pgB').innerHTML='<p class="hint">Đang mở trang…</p>';
+    const ok=await this.load(key);
+    const src=ok&&window.PAGES[key]&&window.PAGES[key][n];
+    $('#pgB').innerHTML=src?`<img src="${src}" alt="trang sách gốc">`:'<p class="hint">Không tìm thấy ảnh trang gốc. Ảnh trang nằm trong thư mục <b>InUse-trang-goc</b>, thư mục này phải nằm cạnh file app.</p>';
+  }};
+
+/* ---------- AI grading (Gemini) ---------- */
+const AI=(()=>{
+  const K='inuse-ai-key', M='inuse-ai-model';
+  const ls=(()=>{try{return window.localStorage}catch(e){return null}})(), ss=(()=>{try{return window.sessionStorage}catch(e){return null}})();
+  const getKey=()=>{ try{ return (ss&&ss.getItem(K))||(ls&&ls.getItem(K))||'' }catch(e){return ''} };
+  const getModel=()=>{ try{ return (ls&&ls.getItem(M))||'gemini-2.5-flash' }catch(e){return 'gemini-2.5-flash'} };
+  function setKey(k,remember){ try{ ls&&ls.removeItem(K); ss&&ss.removeItem(K); if(k) (remember?ls:ss).setItem(K,k) }catch(e){} }
+  function dlg(){
+    let d=$('#aiDlg'); if(!d){ d=document.createElement('div'); d.id='aiDlg'; document.body.appendChild(d);
+      d.addEventListener('click',e=>{ if(e.target===d) d.classList.remove('on') }); }
+    const has=!!getKey();
+    d.innerHTML=`<div class="box"><h3>🔑 API key để AI chấm bài</h3>
+      <div class="hint">Dùng key Gemini (Google AI Studio). Key chỉ được lưu trong trình duyệt trên máy này. Key không nằm trong file app, không hiện lại trên màn hình, và chỉ được gửi tới máy chủ Google (generativelanguage.googleapis.com) khi bạn bấm "🤖 AI chấm".</div>
+      <label>API key ${has?'(đã lưu: ••••'+esc(getKey().slice(-4))+')':''}</label>
+      <input type="password" id="aiKey" placeholder="${has?'Để trống nếu giữ key cũ':'Dán key vào đây'}" autocomplete="off" spellcheck="false">
+      <label><input type="checkbox" id="aiRem" ${has&&ls&&ls.getItem(K)?'checked':(!has?'checked':'')}> Nhớ key trên máy này (bỏ chọn thì key tự xoá khi đóng trình duyệt)</label>
+      <label>Model</label><input type="text" id="aiModel" value="${esc(getModel())}">
+      <div class="row"><button class="btn primary" id="aiSave">Lưu</button><button class="btn" id="aiTest">Thử key</button><button class="btn" id="aiDel">Xoá key</button><button class="btn" id="aiClose" style="margin-left:auto">Đóng</button></div>
+      <div class="st" id="aiSt"></div></div>`;
+    d.classList.add('on');
+    const st=m=>$('#aiSt').textContent=m;
+    $('#aiClose').onclick=()=>d.classList.remove('on');
+    $('#aiSave').onclick=()=>{ const v=$('#aiKey').value.trim(); const rem=$('#aiRem').checked; setKey(v||getKey(),rem); try{ls&&ls.setItem(M,$('#aiModel').value.trim()||'gemini-2.5-flash')}catch(e){} $('#aiKey').value=''; st(getKey()?'Đã lưu ✓':'Chưa có key'); };
+    $('#aiDel').onclick=()=>{ setKey('',false); st('Đã xoá key khỏi máy này.'); };
+    $('#aiTest').onclick=async()=>{ const v=$('#aiKey').value.trim(); if(v) setKey(v,$('#aiRem').checked); $('#aiKey').value=''; st('Đang thử…'); try{ await call('Reply with the single word OK.'); st('Key dùng được ✓') }catch(e){ st('Lỗi: '+e.message) } };
+  }
+  async function call(prompt, json){
+    const key=getKey(); if(!key) throw new Error('chưa có API key');
+    const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(getModel())}:generateContent`,{method:'POST',headers:{'Content-Type':'application/json','x-goog-api-key':key},
+      body:JSON.stringify({contents:[{role:'user',parts:[{text:prompt}]}],generationConfig:Object.assign({temperature:0.2},json?{responseMimeType:'application/json'}:{})})});
+    const j=await r.json().catch(()=>({}));
+    if(!r.ok) throw new Error((j.error&&j.error.message)||('HTTP '+r.status));
+    return ((j.candidates||[])[0]?.content?.parts||[]).map(p=>p.text||'').join('');
+  }
+  async function grade(card,ex){
+    const box=card.querySelector('.aibox'); box.hidden=false;
+    if(!getKey()){ box.innerHTML='Bạn chưa nhập API key. Bấm nút <b>🔑 AI chấm</b> ở trên cùng để thêm key.'; return }
+    const answers=[...card.querySelectorAll('.ans')].map(i=>({k:i.dataset.k,a:i.value.trim()}));
+    const free=(card.querySelector('[data-free]')||{}).value||'';
+    if(!answers.some(x=>x.a)&&!free.trim()){ box.textContent='Bạn chưa làm câu nào.'; return }
+    box.textContent='🤖 AI đang chấm…';
+    const prompt=`You are an English teacher grading a student's exercise from "${BOOK.title}", Unit ${UNIT.u.n}: ${UNIT.u.title}.
+Exercise ${ex.id}:
+${ex.text||'(exercise text not available)'}
+
+Answer key from the book (may say "possible answers"):
+${ex.key||UNIT.u.keyAll||'(no key in the book: judge on correctness and naturalness)'}
+
+Student answers (item -> answer):
+${answers.map(x=>x.k+': '+(x.a||'(blank)')).join('\n')}
+${free.trim()?'\nStudent free writing:\n'+free:''}
+
+Grade each item. Accept answers that are correct English and fit the exercise even if they differ from the key. Explain mistakes briefly in Vietnamese, quoting the English. Return JSON: {"items":[{"k":"<item>","ok":true|false|null,"comment":"<Vietnamese, short>"}],"overall":"<Vietnamese summary, 1-3 sentences; for free writing give corrections>"}. Use ok=null for blank items.`;
+    try{
+      const out=await call(prompt,true); let j; try{ j=JSON.parse(out) }catch(e){ j={overall:out,items:[]} }
+      let ok=0,n=0;
+      for(const it of (j.items||[])){
+        const inp=card.querySelector(`.ans[data-k="${CSS.escape(String(it.k))}"]`); if(!inp) continue;
+        const sol=card.querySelector(`[data-sol="${CSS.escape(String(it.k))}"]`);
+        if(it.ok!==null&&it.ok!==undefined){ n++; if(it.ok) ok++; inp.classList.remove('ok','bad','ref'); inp.classList.add(it.ok?'ok':'bad'); const mk=inp.parentElement.querySelector('.mark'); if(mk) mk.textContent=it.ok?'✓':'✗' }
+        if(sol&&it.comment){ sol.hidden=false; sol.innerHTML='🤖 '+esc(it.comment) }
+      }
+      box.innerHTML=`<b>🤖 AI nhận xét${n?` (${ok}/${n} câu đúng)`:''}:</b>\n`+esc(j.overall||'');
+    }catch(e){ box.textContent='Không chấm được: '+e.message }
+  }
+  return {dlg,grade,getKey};
+})();
+$('#aiBtn').onclick=()=>AI.dlg();
+
 /* ---------- lecture mode ---------- */
 const Lecture=(()=>{
   let slides=[],si=0,pi=0,playing=false,rate=store.get('lecRate',1),voiceName=store.get('lecVoice',''),unit=null,token=0;
@@ -565,18 +707,24 @@ const Lecture=(()=>{
     for(const b of bl){
       if(b.t==='sec'){ push(); cur={l:b.l,h:b.h||'',paras:[]}; continue }
       if(b.t==='ref') continue;
+      if(b.t==='img'){ if(!cur) cur={l:'',h:'',paras:[]}; (cur.imgs=cur.imgs||[]).push({src:b.src}); continue }
+      if(b.t==='tbl'){ if(!cur) cur={l:'',h:'',paras:[]};
+        const rows=b.rows.filter(r=>r.some(c=>plain(c).trim()));
+        for(let k=0;k<rows.length;k+=4){ cur.paras.push({tbl:{rows:rows.slice(k,k+4),head:b.head&&k===0}, say:rows.slice(k,k+4).map(r=>r.filter(c=>c).map(c=>plain(c).replace(/\n/g,'. ')).join(': ')).join('. ')}); if(cur.paras.length>=5){ push(); cur={l:cur.l,h:cur.h?cur.h.replace(/ \(tiếp\)$/,'')+' (tiếp)':'',paras:[]} } }
+        continue }
       if(!cur) cur={l:'',h:'',paras:[]};
       if(b.t==='h'){ if(!cur.paras.length){cur.h=cur.h&&!cur.l?cur.h+' · '+b.s:(cur.h||b.s);continue} if(!cur.l||plain(b.s).length<50){ push(); cur={l:cur.l&&!cur.l?'':'',h:b.s,paras:[]}; continue } }
       const txt=b.t==='h'?'**'+b.s+'**':b.s;
       if(plain(txt).replace(/[^A-Za-z]/g,'').length<2) continue;
       // merge very short lines into previous para for nicer slides
       const last=cur.paras[cur.paras.length-1];
-      if(last && plain(last).length<60 && plain(txt).length<60 && !/[.:?!]$/.test(plain(last))) cur.paras[cur.paras.length-1]=last+' · '+txt;
+      if(last && typeof last==='string' && plain(last).length<60 && plain(txt).length<60 && !/[.:?!]$/.test(plain(last))) cur.paras[cur.paras.length-1]=last+' · '+txt;
       else cur.paras.push(txt);
-      if(cur.paras.length>=6){ push(); cur={l:cur.l,h:cur.h?cur.h+' (tiếp)':'',paras:[]} }
+      if(cur.paras.length>=6){ const im=cur.imgs; push(); cur={l:cur.l,h:cur.h?cur.h.replace(/ \(tiếp\)$/,'')+' (tiếp)':'',paras:[],imgs:im&&im.length>1?im.slice(1):null} }
     }
     push();
-    let k=0; for(const s of out){ if(!s.cover && imgs.length){ s.img=imgs[k%imgs.length]; k++ } }
+    const anyInline=bl.some(b=>b.t==='img');
+    let k=0; for(const s of out){ if(s.cover) continue; if(s.imgs&&s.imgs.length) s.img=s.imgs[0]; else if(!anyInline&&imgs.length){ s.img=imgs[k%imgs.length]; k++ } }
     return out;
   }
   function el(){ let d=$('#lec'); if(d) return d;
@@ -604,7 +752,7 @@ const Lecture=(()=>{
     if(s.cover){
       st.innerHTML=`<div class="slide noimg cover"><div>${BOOKSVG}<div class="k">${esc(BOOK.title)}</div><h2>${UNIT.key==='add'?'':'Unit '+esc(unit.n)+'<br>'}${esc(unit.title)}</h2><p style="opacity:.75">${slides.length-1} phần · bấm ▶ Phát hoặc phím Space</p></div></div>`;
     }else{
-      st.innerHTML=`<div class="slide ${s.img?'':'noimg'}"><div><div class="stitle">${s.l?`<span class="L">${esc(s.l)}</span>`:''}<span>${md(s.h||unit.title)}</span></div>${s.paras.map((p,i)=>`<p class="para ${i<pi?'done':''} ${i===pi?'cur':''}" data-i="${i}">${md(p)}</p>`).join('')}</div>${s.img?`<div class="pic"><img src="${s.img.src}" alt="hình minh hoạ"></div>`:''}</div>`;
+      st.innerHTML=`<div class="slide ${s.img?'':'noimg'}"><div><div class="stitle">${s.l?`<span class="L">${esc(s.l)}</span>`:''}<span>${md(s.h||unit.title)}</span></div>${s.paras.map((p,i)=>`<div class="para ${i<pi?'done':''} ${i===pi?'cur':''}" data-i="${i}">${typeof p==='string'?md(p):tableHTML(p.tbl)}</div>`).join('')}</div>${s.img?`<div class="pic">${(s.imgs&&s.imgs.length?s.imgs.slice(0,3):[s.img]).map(i=>`<img src="${i.src}" alt="hình minh hoạ">`).join('')}</div>`:''}</div>`;
       st.querySelectorAll('.para').forEach(p=>p.onclick=()=>{pi=+p.dataset.i;mark();if(playing){stopSpeech();speak()}});
     }
     $('#lecProg').style.width=Math.round(100*si/Math.max(1,slides.length-1))+'%';
@@ -612,7 +760,7 @@ const Lecture=(()=>{
   }
   function mark(){ $('#lecStage').querySelectorAll('.para').forEach((p,i)=>{p.classList.toggle('cur',i===pi);p.classList.toggle('done',i<pi); if(i===pi) p.scrollIntoView({block:'nearest',behavior:'smooth'})}) }
   function stopSpeech(){ token++; if(synth) synth.cancel() }
-  function textFor(){ const s=slides[si]; if(s.cover) return (UNIT.key==='add'?'':'Unit '+unit.n+'. ')+unit.title; if(pi===-1) return plain(s.h||''); return plain(s.paras[pi]||'').replace(/\s·\s/g,'. ').replace(/\(=/g,'(meaning').replace(/➜/g,'see') }
+  function textFor(){ const s=slides[si]; if(s.cover) return (UNIT.key==='add'?'':'Unit '+unit.n+'. ')+unit.title; if(pi===-1) return plain(s.h||''); const P=s.paras[pi]; if(P&&typeof P!=='string') return P.say; return plain(P||'').replace(/\s·\s/g,'. ').replace(/\(=/g,'(meaning').replace(/➜/g,'see') }
   function speak(){
     if(!synth){ $('#lecCap').textContent='Trình duyệt này không hỗ trợ đọc to'; return }
     const my=++token; const s=slides[si];
