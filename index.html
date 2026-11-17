@@ -112,6 +112,52 @@ textarea.free{width:100%;min-height:80px;margin-top:10px;padding:8px 10px;border
 .imgrow{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px}
 .imgrow img{max-width:100%;max-height:none;border-radius:8px;border:1px solid var(--line);background:#fff}
 .dataBtn{border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:8px;padding:6px 10px;white-space:nowrap}
+.theory b{font-weight:700;color:color-mix(in srgb,var(--ink) 85%,var(--bk))}
+.theory .sub{font-weight:700;margin:14px 0 6px;color:var(--bk)}
+.theory p.gl{font-size:13.5px;color:var(--muted);margin:0 0 2px}
+.theory sup{font-size:10px;color:var(--bk);font-weight:700}
+.lec-cta{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:0 0 14px}
+/* lecture overlay */
+#lec{position:fixed;inset:0;z-index:100;display:none;background:#0d1020;color:#f3f5fb;overflow:hidden}
+#lec.on{display:block}
+#lec .bg{position:absolute;inset:-20%;filter:blur(60px);opacity:.55}
+#lec .bg i{position:absolute;width:42vmax;height:42vmax;border-radius:50%;animation:drift 18s ease-in-out infinite alternate}
+#lec .bg i:nth-child(1){background:var(--bk);left:5%;top:10%}
+#lec .bg i:nth-child(2){background:#f0a500;right:0;top:40%;animation-duration:23s}
+#lec .bg i:nth-child(3){background:#2bb3a3;left:30%;bottom:-10%;animation-duration:27s}
+@keyframes drift{to{transform:translate(8vmax,-6vmax) scale(1.15)}}
+#lec .top{position:relative;display:flex;align-items:center;gap:12px;padding:14px 20px}
+#lec .top .t{font-weight:700;opacity:.9;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#lec .x{background:rgba(255,255,255,.12);border:0;color:#fff;border-radius:9px;padding:7px 12px}
+#lec .stage{position:relative;height:calc(100vh - 150px);display:grid;place-items:center;padding:0 24px}
+#lec .slide{width:min(1100px,100%);max-height:100%;overflow:auto;display:grid;grid-template-columns:1fr auto;gap:28px;align-items:start;animation:slidein .6s cubic-bezier(.2,.8,.2,1)}
+#lec .slide.noimg{grid-template-columns:1fr}
+@keyframes slidein{from{opacity:0;transform:translateY(30px) scale(.98)}to{opacity:1;transform:none}}
+#lec .stitle{display:flex;align-items:center;gap:14px;font-size:clamp(22px,3.2vw,36px);font-weight:800;margin:0 0 18px;line-height:1.15}
+#lec .stitle .L{width:52px;height:52px;border-radius:14px;background:var(--bk);display:grid;place-items:center;font-size:28px;flex:none;box-shadow:0 8px 30px rgba(0,0,0,.35);animation:pop .6s cubic-bezier(.2,1.6,.4,1)}
+@keyframes pop{from{transform:scale(0) rotate(-20deg)}to{transform:none}}
+#lec .para{font-size:clamp(16px,1.6vw,21px);line-height:1.6;margin:0 0 12px;padding:8px 14px;border-radius:12px;opacity:.38;transition:opacity .4s,background .4s,transform .4s;border-left:4px solid transparent}
+#lec .para.done{opacity:.7}
+#lec .para.cur{opacity:1;background:rgba(255,255,255,.08);border-left-color:var(--bk);transform:translateX(4px)}
+#lec .para b{color:#ffd166;font-weight:700}
+#lec .para.cur b{animation:glow 1.2s ease-in-out}
+@keyframes glow{0%{text-shadow:0 0 0 transparent}40%{text-shadow:0 0 18px #ffd166}100%{text-shadow:0 0 0 transparent}}
+#lec .para i{color:#9fd8ff}
+#lec .pic{max-width:min(380px,34vw);display:flex;flex-direction:column;gap:12px}
+#lec .pic img{width:100%;border-radius:14px;background:#fff;box-shadow:0 14px 40px rgba(0,0,0,.4);animation:float 6s ease-in-out infinite}
+@keyframes float{50%{transform:translateY(-8px)}}
+#lec .cover{text-align:center}
+#lec .cover h2{font-size:clamp(28px,5vw,56px);margin:10px 0;line-height:1.1;animation:slidein .8s}
+#lec .cover .k{opacity:.75;letter-spacing:.2em;text-transform:uppercase;font-size:13px}
+#lec .cover svg{width:120px;height:120px;animation:float 4s ease-in-out infinite}
+#lec .ctl{position:absolute;left:0;right:0;bottom:0;height:auto;width:auto;border-radius:0;overflow:visible;padding:12px 20px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:linear-gradient(transparent,rgba(0,0,0,.5))}
+#lec .ctl button,#lec .ctl select{background:rgba(255,255,255,.14);border:0;color:#fff;border-radius:9px;padding:8px 12px;font:inherit}
+#lec .ctl select option{color:#000}
+#lec .ctl .play{background:var(--bk);font-weight:700;min-width:96px}
+#lec .prog{flex:1;min-width:120px;height:6px;background:rgba(255,255,255,.18);border-radius:9px;overflow:hidden}
+#lec .prog i{display:block;height:100%;background:#ffd166;width:0;transition:width .4s}
+#lec .cap{font-size:12.5px;opacity:.75}
+@media (max-width:860px){#lec .slide{grid-template-columns:1fr}#lec .pic{max-width:100%}#lec .stage{height:calc(100vh - 190px)}}
 .empty{padding:60px 20px;text-align:center;color:var(--muted)}
 .unit-sum{display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin:-4px 0 14px;color:var(--muted);font-size:13.5px}
 .bar{height:6px;border-radius:9px;background:var(--line);overflow:hidden;width:160px}
@@ -324,6 +370,20 @@ function selectUnit(k){
 }
 
 /* ---------- theory ---------- */
+function md(s){
+  return esc(s).replace(/\*\*(.+?)\*\*/g,'<b>$1</b>').replace(/(^|[\s(\[‘“])_(.+?)_(?=$|[\s.,;:!?)\]’”])/g,'$1<i>$2</i>').replace(/\^(\d{1,2})\^/g,'<sup>$1</sup>');
+}
+function plain(s){return String(s).replace(/\*\*|\^\d{1,2}\^/g,'').replace(/(^|\s)_(.+?)_/g,'$1$2')}
+function renderBlocks(bl){
+  let h='';
+  for(const b of bl){
+    if(b.t==='sec') h+=`<div class="sec"><span class="L">${esc(b.l)}</span>${md(b.h||'')}</div>`;
+    else if(b.t==='h') h+=`<div class="sub">${md(b.s)}</div>`;
+    else if(b.t==='ref') h+=`<p class="hint">${md(b.s)}</p>`;
+    else { const s=b.s; const cls=/^(•|–|-)\s?/.test(plain(s))?'bul':(/^\d{1,2}\s/.test(plain(s))&&plain(s).length<140?'gl':''); h+=`<p class="${cls}">${md(s)}</p>`; }
+  }
+  return h;
+}
 function renderTheory(text){
   const lines=text.split('\n');
   let html='';
@@ -417,7 +477,8 @@ function renderUnit(){
   const isPage=imgs.length&&imgs[0].page;
   const imgHtml=imgs.length?`<details class="imgs" ${isPage?'':'open'}><summary>${isPage?'Xem trang sách gốc (có hình minh hoạ)':'Hình minh hoạ trong sách ('+imgs.length+')'}</summary><div class="imgrow">${imgs.map(i=>`<img src="${i.src}" alt="hình minh hoạ" loading="lazy" style="${i.page?'width:100%':''}">`).join('')}</div></details>`:'';
   if(tab==='theory' && !isAdd){
-    html+=imgHtml+`<div class="theory">${renderTheory(u.theory||'')}</div>`;
+    html+=`<div class="lec-cta"><button class="btn primary" id="lecBtn">▶ Xem bài giảng (giọng đọc tiếng Anh)</button><span class="hint">Slide hoạt ảnh, đọc to từng đoạn, kèm hình minh hoạ.</span></div>`;
+    html+=imgHtml+`<div class="theory">${u.theoryBlocks?renderBlocks(u.theoryBlocks):renderTheory(u.theory||'')}</div>`;
     html+=`<p class="hint">Hình minh hoạ và bảng trong sách gốc không chuyển được sang chữ nên có thể thiếu hoặc bị xếp lộn dòng.</p>`;
   }else{
     html+=imgHtml;
@@ -431,6 +492,7 @@ function renderUnit(){
   $('#content').querySelectorAll('.tab').forEach(b=>b.onclick=()=>{state.tab[state.book+':'+UNIT.key]=b.dataset.t;store.set('state',state);renderUnit()});
   $('#content').querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>selectUnit(b.dataset.go==='add'?'add':+b.dataset.go));
   $('#content').querySelectorAll('.excard').forEach(card=>wireCard(card,u.exercises[+card.dataset.ex]));
+  const lb=$('#lecBtn'); if(lb) lb.onclick=()=>Lecture.open(u);
   updateUnitSummary();
 }
 
@@ -488,6 +550,93 @@ function updateUnitSummary(){
 }
 
 $('#dataBtn').onclick=()=>importScreen();
+/* ---------- lecture mode ---------- */
+const Lecture=(()=>{
+  let slides=[],si=0,pi=0,playing=false,rate=store.get('lecRate',1),voiceName=store.get('lecVoice',''),unit=null,token=0;
+  const synth=window.speechSynthesis;
+  function voices(){ return (synth?synth.getVoices():[]).filter(v=>/^en/i.test(v.lang)) }
+  function pickVoice(){ const vs=voices(); return vs.find(v=>v.name===voiceName)||vs.find(v=>/en-GB/i.test(v.lang)&&/natural|online|neural/i.test(v.name))||vs.find(v=>/en-GB/i.test(v.lang))||vs.find(v=>/natural|online|neural/i.test(v.name))||vs[0] }
+  function build(u){
+    const bl=u.theoryBlocks||(u.theory||'').split('\n').filter(Boolean).map(s=>({t:'p',s}));
+    const imgs=(u.images||[]).filter(i=>i.kind==='theory'&&!i.page);
+    const out=[{cover:true}];
+    let cur=null;
+    const push=()=>{ if(cur&&cur.paras.length) out.push(cur) };
+    for(const b of bl){
+      if(b.t==='sec'){ push(); cur={l:b.l,h:b.h||'',paras:[]}; continue }
+      if(b.t==='ref') continue;
+      if(!cur) cur={l:'',h:'',paras:[]};
+      if(b.t==='h'){ if(!cur.paras.length){cur.h=cur.h&&!cur.l?cur.h+' · '+b.s:(cur.h||b.s);continue} if(!cur.l||plain(b.s).length<50){ push(); cur={l:cur.l&&!cur.l?'':'',h:b.s,paras:[]}; continue } }
+      const txt=b.t==='h'?'**'+b.s+'**':b.s;
+      if(plain(txt).replace(/[^A-Za-z]/g,'').length<2) continue;
+      // merge very short lines into previous para for nicer slides
+      const last=cur.paras[cur.paras.length-1];
+      if(last && plain(last).length<60 && plain(txt).length<60 && !/[.:?!]$/.test(plain(last))) cur.paras[cur.paras.length-1]=last+' · '+txt;
+      else cur.paras.push(txt);
+      if(cur.paras.length>=6){ push(); cur={l:cur.l,h:cur.h?cur.h+' (tiếp)':'',paras:[]} }
+    }
+    push();
+    let k=0; for(const s of out){ if(!s.cover && imgs.length){ s.img=imgs[k%imgs.length]; k++ } }
+    return out;
+  }
+  function el(){ let d=$('#lec'); if(d) return d;
+    d=document.createElement('div'); d.id='lec';
+    d.innerHTML=`<div class="bg"><i></i><i></i><i></i></div>
+      <div class="top"><span class="t" id="lecT"></span><button class="x" id="lecX">✕ Đóng</button></div>
+      <div class="stage" id="lecStage"></div>
+      <div class="ctl"><button id="lecPrev" title="Slide trước">⏮</button><button class="play" id="lecPlay">▶ Phát</button><button id="lecNext" title="Slide sau">⏭</button>
+        <div class="prog"><i id="lecProg"></i></div><span class="cap" id="lecCap"></span>
+        <select id="lecRate" title="Tốc độ đọc"><option value="0.8">0.8×</option><option value="0.9">0.9×</option><option value="1">1×</option><option value="1.15">1.15×</option><option value="1.3">1.3×</option></select>
+        <select id="lecVoice" title="Giọng đọc"></select></div>`;
+    document.body.appendChild(d);
+    $('#lecX').onclick=close; $('#lecPrev').onclick=()=>go(si-1); $('#lecNext').onclick=()=>go(si+1);
+    $('#lecPlay').onclick=()=>playing?pause():play();
+    $('#lecRate').value=String(rate); $('#lecRate').onchange=e=>{rate=+e.target.value;store.set('lecRate',rate); if(playing){stopSpeech();speak()}};
+    $('#lecVoice').onchange=e=>{voiceName=e.target.value;store.set('lecVoice',voiceName); if(playing){stopSpeech();speak()}};
+    const fill=()=>{ const vs=voices(), v=pickVoice(); $('#lecVoice').innerHTML=vs.length?vs.map(x=>`<option ${v&&x.name===v.name?'selected':''}>${esc(x.name)}</option>`).join(''):'<option>(máy chưa có giọng tiếng Anh)</option>' };
+    fill(); if(synth) synth.onvoiceschanged=fill;
+    document.addEventListener('keydown',e=>{ if(!$('#lec.on')) return; if(e.key==='Escape') close(); if(e.key===' '){e.preventDefault();playing?pause():play()} if(e.key==='ArrowRight') go(si+1); if(e.key==='ArrowLeft') go(si-1) });
+    return d;
+  }
+  const BOOKSVG=`<svg viewBox="0 0 120 120" fill="none"><circle cx="60" cy="60" r="56" fill="rgba(255,255,255,.08)"/><path d="M28 38c10-4 22-4 32 3v46c-10-7-22-7-32-3z" fill="#ffd166"/><path d="M92 38c-10-4-22-4-32 3v46c10-7 22-7 32-3z" fill="#fff" opacity=".9"/><path d="M60 41v46" stroke="#0d1020" stroke-width="2"/><circle cx="86" cy="28" r="6" fill="#2bb3a3"><animate attributeName="r" values="4;8;4" dur="2s" repeatCount="indefinite"/></circle></svg>`;
+  function render(){
+    const s=slides[si]; const st=$('#lecStage');
+    if(s.cover){
+      st.innerHTML=`<div class="slide noimg cover"><div>${BOOKSVG}<div class="k">${esc(BOOK.title)}</div><h2>${UNIT.key==='add'?'':'Unit '+esc(unit.n)+'<br>'}${esc(unit.title)}</h2><p style="opacity:.75">${slides.length-1} phần · bấm ▶ Phát hoặc phím Space</p></div></div>`;
+    }else{
+      st.innerHTML=`<div class="slide ${s.img?'':'noimg'}"><div><div class="stitle">${s.l?`<span class="L">${esc(s.l)}</span>`:''}<span>${md(s.h||unit.title)}</span></div>${s.paras.map((p,i)=>`<p class="para ${i<pi?'done':''} ${i===pi?'cur':''}" data-i="${i}">${md(p)}</p>`).join('')}</div>${s.img?`<div class="pic"><img src="${s.img.src}" alt="hình minh hoạ"></div>`:''}</div>`;
+      st.querySelectorAll('.para').forEach(p=>p.onclick=()=>{pi=+p.dataset.i;mark();if(playing){stopSpeech();speak()}});
+    }
+    $('#lecProg').style.width=Math.round(100*si/Math.max(1,slides.length-1))+'%';
+    $('#lecCap').textContent=`${si+1}/${slides.length}`;
+  }
+  function mark(){ $('#lecStage').querySelectorAll('.para').forEach((p,i)=>{p.classList.toggle('cur',i===pi);p.classList.toggle('done',i<pi); if(i===pi) p.scrollIntoView({block:'nearest',behavior:'smooth'})}) }
+  function stopSpeech(){ token++; if(synth) synth.cancel() }
+  function textFor(){ const s=slides[si]; if(s.cover) return (UNIT.key==='add'?'':'Unit '+unit.n+'. ')+unit.title; if(pi===-1) return plain(s.h||''); return plain(s.paras[pi]||'').replace(/\s·\s/g,'. ').replace(/\(=/g,'(meaning').replace(/➜/g,'see') }
+  function speak(){
+    if(!synth){ $('#lecCap').textContent='Trình duyệt này không hỗ trợ đọc to'; return }
+    const my=++token; const s=slides[si];
+    const txt=textFor();
+    const u=new SpeechSynthesisUtterance(txt); const v=pickVoice(); if(v){u.voice=v;u.lang=v.lang} else u.lang='en-GB'; u.rate=rate;
+    u.onend=()=>{ if(my!==token||!playing) return; advance() };
+    u.onerror=()=>{ if(my!==token) return; if(playing) setTimeout(advance,400) };
+    synth.speak(u);
+  }
+  function advance(){
+    const s=slides[si];
+    if(s.cover){ if(si+1<slides.length){ si++; pi=0; render(); setTimeout(()=>{ if(playing) speak() },500) } else pause(); return }
+    if(pi+1<s.paras.length){ pi++; mark(); speak(); return }
+    if(si+1<slides.length){ si++; pi=0; render(); setTimeout(()=>{ if(playing) speak() },500); return }
+    pause(); $('#lecCap').textContent='Hết bài ✓';
+  }
+  function play(){ playing=true; $('#lecPlay').textContent='⏸ Dừng'; speak() }
+  function pause(){ playing=false; stopSpeech(); $('#lecPlay').textContent='▶ Phát' }
+  function go(n){ if(n<0||n>=slides.length) return; stopSpeech(); si=n; pi=0; render(); if(playing) setTimeout(speak,350) }
+  function open(u){ unit=u; slides=build(u); si=0; pi=0; el().classList.add('on'); $('#lecT').textContent=(BOOK.title||'')+' — '+u.title; render(); pause() }
+  function close(){ pause(); const d=$('#lec'); if(d) d.classList.remove('on') }
+  return {open,close};
+})();
+
 renderBooks();
 selectBook(state.book);
 })();
