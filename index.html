@@ -620,7 +620,7 @@ function renderExercise(ex, idx){
   }
   let body=''; let first=true;
   for(const e of ents){
-    if(e.k){ placed.add(e.k); body+=`<div class="exline item"><span class="txt">${inl(e.lines.map(lineHTML).join(' '))}</span>${inputHTML(ex,byK.get(e.k),saved)}</div>` }
+    if(e.k){ placed.add(e.k); body+=`<div class="exline item"><span class="txt">${inl(e.lines.map((l,i)=>(i&&(/^[A-Z][A-Za-z]*:\s/.test(l)||/[.?!][’”'"]?$/.test(e.lines[i-1]))?'<br>':(i?' ':''))+lineHTML(l)).join(''))}</span>${inputHTML(ex,byK.get(e.k),saved)}</div>` }
     else body+=`<div class="exline ${first?'instr':''}">${inl(lineHTML(e.lines[0]))}</div>`;
     first=false;
   }
